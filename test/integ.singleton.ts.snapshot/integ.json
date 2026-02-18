@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "SingletonTest/DefaultTest": {
+      "stacks": [
+        "SingletonIntegTest"
+      ],
+      "diffAssets": true,
+      "assertionStack": "SingletonTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SingletonTestDefaultTestDeployAssertD9CAFC91"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

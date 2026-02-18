@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "RestrictDefaultSecurityGroupTest/DefaultTest": {
+      "stacks": [
+        "RestrictDefaultSecurityGroupIntegTest"
+      ],
+      "diffAssets": true,
+      "assertionStack": "RestrictDefaultSecurityGroupTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RestrictDefaultSecurityGroupTestDefaultTestDeployAssert2D1A459C"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

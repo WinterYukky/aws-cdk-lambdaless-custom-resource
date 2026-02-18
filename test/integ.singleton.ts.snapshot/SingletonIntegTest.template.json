@@ -1,0 +1,701 @@
+{
+ "Resources": {
+  "StateMachine1RoleDE82F282": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachine18AFC9B86": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"Create1\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"Update\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"Delete\"}]},\"Create1\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"resource-1\",\"Data\":{\"message\":\"{% $states.input.ResourceProperties.value %}\"}},\"End\":true},\"Update\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"Delete\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true}}}",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachine1RoleDE82F282",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "StateMachine1RoleDE82F282"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomResource11B941E48": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Fn::Select": [
+         1,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueSingletonIntegTestLambdalessProviderTopic207F87384400F369",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueSingletonIntegTestLambdalessProviderTopic207F87384400F369",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         3,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueSingletonIntegTestLambdalessProviderTopic207F87384400F369",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         4,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueSingletonIntegTestLambdalessProviderTopic207F87384400F369",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         5,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueSingletonIntegTestLambdalessProviderTopic207F87384400F369",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    },
+    "value": "first",
+    "stateMachineArn": {
+     "Ref": "StateMachine18AFC9B86"
+    }
+   },
+   "DependsOn": [
+    "CustomResource1Policy0DF66551"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomResource1Policy0DF66551": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "StateMachine18AFC9B86"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomResource1Policy0DF66551",
+    "Roles": [
+     {
+      "Ref": "LambdalessProviderStateMachineRole4BDCD64E"
+     }
+    ]
+   }
+  },
+  "LambdalessProviderTopic58DC2415": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "LambdalessProviderQueue3E954037": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdalessProviderQueuePolicy16C88515": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Ref": "LambdalessProviderTopic58DC2415"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sns.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "LambdalessProviderQueue3E954037",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "LambdalessProviderQueue3E954037"
+     }
+    ]
+   }
+  },
+  "LambdalessProviderQueueSingletonIntegTestLambdalessProviderTopic207F87384400F369": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "LambdalessProviderQueue3E954037",
+      "Arn"
+     ]
+    },
+    "Protocol": "sqs",
+    "TopicArn": {
+     "Ref": "LambdalessProviderTopic58DC2415"
+    }
+   },
+   "DependsOn": [
+    "LambdalessProviderPipeE285A459",
+    "LambdalessProviderPipeRoleDefaultPolicy918C6032",
+    "LambdalessProviderPipeRoleD3BC051F",
+    "LambdalessProviderQueuePolicy16C88515"
+   ]
+  },
+  "LambdalessProviderConnection803AC994": {
+   "Type": "AWS::Events::Connection",
+   "Properties": {
+    "AuthParameters": {
+     "ApiKeyAuthParameters": {
+      "ApiKeyName": "dummy",
+      "ApiKeyValue": "dummy"
+     }
+    },
+    "AuthorizationType": "API_KEY"
+   }
+  },
+  "LambdalessProviderLogA6A71739": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdalessProviderStateMachineRole4BDCD64E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "LambdalessProviderStateMachineRoleDefaultPolicy613E8B8C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogDelivery",
+        "logs:DeleteLogDelivery",
+        "logs:DescribeLogGroups",
+        "logs:DescribeResourcePolicies",
+        "logs:GetLogDelivery",
+        "logs:ListLogDeliveries",
+        "logs:PutResourcePolicy",
+        "logs:UpdateLogDelivery",
+        "states:describeExecution",
+        "states:startExecution"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "events:RetrieveConnectionCredentials",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "LambdalessProviderConnection803AC994",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "LambdalessProviderConnection803AC994",
+         "SecretArn"
+        ]
+       }
+      },
+      {
+       "Action": "states:InvokeHTTPEndpoint",
+       "Condition": {
+        "StringLike": {
+         "states:HTTPEndpoint": "*"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LambdalessProviderStateMachineRoleDefaultPolicy613E8B8C",
+    "Roles": [
+     {
+      "Ref": "LambdalessProviderStateMachineRole4BDCD64E"
+     }
+    ]
+   }
+  },
+  "LambdalessProviderStateMachine7D8C8128": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"Next\":\"Describe Execution\",\"Assign\":{\"ExecutionArn\":\"{% $replace($states.input.ResourceProperties.stateMachineArn, 'stateMachine', 'execution') & ':' & $states.input.RequestId %}\",\"RequestType\":\"{% $states.input.RequestType %}\",\"ResponseURL\":\"{% $states.input.ResponseURL %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Describe Execution\":{\"Next\":\"Is finished?\",\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"Start Execution\"}],\"Type\":\"Task\",\"Arguments\":{\"ExecutionArn\":\"{% $ExecutionArn %}\",\"IncludedData\":\"ALL_DATA\"},\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::aws-sdk:sfn:describeExecution\"},\"Still Running\":{\"Type\":\"Wait\",\"Seconds\":1,\"Next\":\"Describe Execution\"},\"Start Execution\":{\"Next\":\"Still Running\",\"Type\":\"Task\",\"Arguments\":{\"Name\":\"{% $RequestId %}\",\"Input\":{\"RequestType\":\"{% $RequestType %}\",\"StackId\":\"{% $StackId %}\",\"RequestId\":\"{% $RequestId %}\",\"ResourceType\":\"{% $ResourceType %}\",\"LogicalResourceId\":\"{% $LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $PhysicalResourceId %}\",\"ResourceProperties\":\"{% $ResourceProperties %}\",\"OldResourceProperties\":\"{% $OldResourceProperties %}\"},\"StateMachineArn\":\"{% $ResourceProperties.stateMachineArn %}\"},\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::aws-sdk:sfn:startExecution\"},\"Is finished?\":{\"Type\":\"Choice\",\"Choices\":[{\"Condition\":\"{% $states.input.Status = 'RUNNING' %}\",\"Next\":\"Still Running\"},{\"Condition\":\"{% $states.input.Status = 'SUCCEEDED' %}\",\"Output\":\"{% $parse($states.input.Output) %}\",\"Next\":\"Response to CloudFormation\"}],\"Default\":\"Given workflow was failed\"},\"Given workflow was failed\":{\"Type\":\"Pass\",\"Output\":{\"Status\":\"FAILED\",\"Reason\":\"{% $states.input.Error & ': ' & $states.input.Cause %}\"},\"Next\":\"Response to CloudFormation\"},\"Response to CloudFormation\":{\"End\":true,\"Type\":\"Task\",\"Arguments\":{\"ApiEndpoint\":\"{% $match($ResponseURL, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[0] & '/' & $match($ResponseURL, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[1] ~> $decodeUrlComponent() %}\",\"Authentication\":{\"ConnectionArn\":\"",
+       {
+        "Fn::GetAtt": [
+         "LambdalessProviderConnection803AC994",
+         "Arn"
+        ]
+       },
+       "\"},\"Method\":\"PUT\",\"RequestBody\":{\"Status\":\"{% $exists($states.input.Status) ? $states.input.Status : 'SUCCESS' %}\",\"StackId\":\"{% $StackId %}\",\"RequestId\":\"{% $RequestId %}\",\"LogicalResourceId\":\"{% $LogicalResourceId %}\",\"Data\":\"{% (\\n            $deepSpread := function($value, $path, $arr) {(\\n                $arr := $arr ? $arr : [];\\n                $t := $type($value);\\n                $result := \\n                $t = \\\"object\\\" ? $each($value, function($v, $k){\\n                    $deepSpread($v, $path ? $path & \\\".\\\" & $k : $k, $arr)\\n                }) : \\n                $t = \\\"array\\\" ? $map($value, function($el, $index){\\n                    $deepSpread($el, $path ? $path & \\\".\\\" & $string($index) : $string($index), $arr)\\n                }) :\\n                {\\n                    $path: $string($value)\\n                };\\n                $append($arr, $result) ~> $merge\\n            )};\\n            $exists($states.input.Data) ? $deepSpread($states.input.Data) : {}\\n            ) %}\",\"NoEcho\":\"{% $exists($states.input.NoEcho) ? $states.input.NoEcho : false %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : $RequestId %}\",\"Reason\":\"{% $exists($states.input.Reason) ? $states.input.Reason : '' %}\"},\"QueryParameters\":\"{% $ResponseURL ~> $substringAfter('?') ~> $split('&') ~> $map(function($v) {( $kv := $split($v, '='); {$kv[0]: $decodeUrlComponent($kv[1])} )}) ~> $merge %}\"},\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::http:invoke\"}},\"QueryLanguage\":\"JSONata\"}"
+      ]
+     ]
+    },
+    "LoggingConfiguration": {
+     "Destinations": [
+      {
+       "CloudWatchLogsLogGroup": {
+        "LogGroupArn": {
+         "Fn::GetAtt": [
+          "LambdalessProviderLogA6A71739",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "IncludeExecutionData": true,
+     "Level": "ALL"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "LambdalessProviderStateMachineRole4BDCD64E",
+      "Arn"
+     ]
+    },
+    "StateMachineType": "EXPRESS"
+   },
+   "DependsOn": [
+    "LambdalessProviderStateMachineRoleDefaultPolicy613E8B8C",
+    "LambdalessProviderStateMachineRole4BDCD64E"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdalessProviderPipeRoleD3BC051F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "pipes.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "LambdalessProviderPipeRoleDefaultPolicy918C6032": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "LambdalessProviderQueue3E954037",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "states:StartSyncExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "LambdalessProviderStateMachine7D8C8128"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LambdalessProviderPipeRoleDefaultPolicy918C6032",
+    "Roles": [
+     {
+      "Ref": "LambdalessProviderPipeRoleD3BC051F"
+     }
+    ]
+   }
+  },
+  "LambdalessProviderPipeE285A459": {
+   "Type": "AWS::Pipes::Pipe",
+   "Properties": {
+    "Description": "Auto generated by AWS CDK Custom Resource",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "LambdalessProviderPipeRoleD3BC051F",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "Fn::GetAtt": [
+      "LambdalessProviderQueue3E954037",
+      "Arn"
+     ]
+    },
+    "SourceParameters": {
+     "SqsQueueParameters": {
+      "BatchSize": 1
+     }
+    },
+    "Target": {
+     "Ref": "LambdalessProviderStateMachine7D8C8128"
+    },
+    "TargetParameters": {
+     "InputTemplate": "<$.body.Message>",
+     "StepFunctionStateMachineParameters": {
+      "InvocationType": "REQUEST_RESPONSE"
+     }
+    }
+   },
+   "DependsOn": [
+    "LambdalessProviderPipeRoleDefaultPolicy918C6032",
+    "LambdalessProviderPipeRoleD3BC051F"
+   ]
+  },
+  "StateMachine2Role6BE3CF0B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachine21CE8E3CE": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"Create2\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"Update\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"Delete\"}]},\"Create2\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"resource-2\",\"Data\":{\"message\":\"{% $states.input.ResourceProperties.value %}\"}},\"End\":true},\"Update\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"Delete\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true}}}",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachine2Role6BE3CF0B",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "StateMachine2Role6BE3CF0B"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomResource25835BA08": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Fn::Select": [
+         1,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueSingletonIntegTestLambdalessProviderTopic207F87384400F369",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueSingletonIntegTestLambdalessProviderTopic207F87384400F369",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         3,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueSingletonIntegTestLambdalessProviderTopic207F87384400F369",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         4,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueSingletonIntegTestLambdalessProviderTopic207F87384400F369",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         5,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueSingletonIntegTestLambdalessProviderTopic207F87384400F369",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    },
+    "value": "second",
+    "stateMachineArn": {
+     "Ref": "StateMachine21CE8E3CE"
+    }
+   },
+   "DependsOn": [
+    "CustomResource2PolicyF11B6D2C"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomResource2PolicyF11B6D2C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "StateMachine21CE8E3CE"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomResource2PolicyF11B6D2C",
+    "Roles": [
+     {
+      "Ref": "LambdalessProviderStateMachineRole4BDCD64E"
+     }
+    ]
+   }
+  }
+ },
+ "Outputs": {
+  "Message1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "CustomResource11B941E48",
+     "message"
+    ]
+   }
+  },
+  "Message2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "CustomResource25835BA08",
+     "message"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

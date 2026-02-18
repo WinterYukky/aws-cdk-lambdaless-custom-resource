@@ -1,5 +1,6 @@
 {
   "name": "aws-cdk-lambdaless-custom-resource",
+  "description": "AWS CDK construct library for creating CloudFormation custom resources without Lambda functions, using Step Functions instead",
   "repository": {
     "type": "git",
     "url": "https://github.com/WinterYukky/aws-cdk-lambdaless-custom-resource"
@@ -14,6 +15,8 @@
     "docgen": "npx projen docgen",
     "eject": "npx projen eject",
     "eslint": "npx projen eslint",
+    "integ": "npx projen integ",
+    "integ:update": "npx projen integ:update",
     "package": "npx projen package",
     "package-all": "npx projen package-all",
     "package:js": "npx projen package:js",
@@ -34,17 +37,20 @@
     "organization": false
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^2",
+    "@aws-cdk/integ-runner": "latest",
+    "@aws-cdk/integ-tests-alpha": "latest",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.2.3",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
-    "aws-cdk-lib": "2.1.0",
+    "aws-cdk-lib": "2.238.0",
     "commit-and-tag-version": "^12",
     "constructs": "10.0.5",
     "eslint": "^9",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.5",
     "jest": "^30.2.0",
     "jest-junit": "^16",
     "jsii": "~5.9.0",
@@ -52,17 +58,22 @@
     "jsii-docgen": "^10.5.0",
     "jsii-pacmak": "^1.126.0",
     "jsii-rosetta": "~5.9.0",
+    "prettier": "^3.8.1",
     "projen": "^0.99.12",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.1.0",
+    "aws-cdk-lib": "^2.238.0",
     "constructs": "^10.0.5"
   },
   "keywords": [
-    "cdk"
+    "cdk",
+    "cloudformation",
+    "custom-resource",
+    "lambdaless",
+    "step-functions"
   ],
   "main": "lib/index.js",
   "license": "Apache-2.0",
