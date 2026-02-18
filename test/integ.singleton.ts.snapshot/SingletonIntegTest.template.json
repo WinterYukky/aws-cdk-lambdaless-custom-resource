@@ -239,14 +239,6 @@
     "AuthorizationType": "API_KEY"
    }
   },
-  "LambdalessProviderLogA6A71739": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "LambdalessProviderStateMachineRole4BDCD64E": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -271,14 +263,6 @@
      "Statement": [
       {
        "Action": [
-        "logs:CreateLogDelivery",
-        "logs:DeleteLogDelivery",
-        "logs:DescribeLogGroups",
-        "logs:DescribeResourcePolicies",
-        "logs:GetLogDelivery",
-        "logs:ListLogDeliveries",
-        "logs:PutResourcePolicy",
-        "logs:UpdateLogDelivery",
         "states:describeExecution",
         "states:startExecution"
        ],
@@ -358,22 +342,6 @@
        ":states:::http:invoke\"}},\"QueryLanguage\":\"JSONata\"}"
       ]
      ]
-    },
-    "LoggingConfiguration": {
-     "Destinations": [
-      {
-       "CloudWatchLogsLogGroup": {
-        "LogGroupArn": {
-         "Fn::GetAtt": [
-          "LambdalessProviderLogA6A71739",
-          "Arn"
-         ]
-        }
-       }
-      }
-     ],
-     "IncludeExecutionData": true,
-     "Level": "ALL"
     },
     "RoleArn": {
      "Fn::GetAtt": [

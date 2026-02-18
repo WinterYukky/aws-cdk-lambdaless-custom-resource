@@ -1,7 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Authorization, Connection } from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 import { CfnSubscription, Topic } from 'aws-cdk-lib/aws-sns';
 import { SqsSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
@@ -11,7 +10,6 @@ import {
   Condition,
   DefinitionBody,
   IStateMachine,
-  LogLevel,
   Pass,
   QueryLanguage,
   StateMachine,
@@ -230,14 +228,6 @@ export class LambdalessProvider extends Construct {
       definitionBody: DefinitionBody.fromChainable(
         init.next(describeExecution).next(isFinished),
       ),
-      // for Debug only
-      logs: {
-        level: LogLevel.ALL,
-        includeExecutionData: true,
-        destination: new LogGroup(this, 'Log', {
-          removalPolicy: cdk.RemovalPolicy.DESTROY,
-        }),
-      },
     });
   }
 }

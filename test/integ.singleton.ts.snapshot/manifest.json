@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f2ac054732bfcec2d2c0d58aa940dd317b086b2c674615643ab318e9d919ab5f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e228eccb362494514b842cdd4020d5d66cd75ab224509734deed15eb82bfce7f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -196,40 +196,13 @@
             "data": "LambdalessProviderConnection803AC994"
           }
         ],
-        "/SingletonIntegTest/LambdalessProvider/Log": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/SingletonIntegTest/LambdalessProvider/Log/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdalessProviderLogA6A71739"
-          }
-        ],
         "/SingletonIntegTest/LambdalessProvider/StateMachine": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "stateMachineType": "EXPRESS",
               "queryLanguage": "JSONata",
-              "definitionBody": "*",
-              "logs": {
-                "level": "ALL",
-                "includeExecutionData": true,
-                "destination": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
+              "definitionBody": "*"
             }
           },
           {
@@ -342,14 +315,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
               "attachInlinePolicy": [
                 "*"
               ]
@@ -404,14 +369,6 @@
             "data": {
               "attachToRole": [
                 "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
               ]
             }
           },
@@ -676,6 +633,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "LambdalessProviderLogA6A71739": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdalessProviderLogA6A71739",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

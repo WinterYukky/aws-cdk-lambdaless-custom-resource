@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/92c649d9d94bf1ec955675eb599419315122da41afab80f2add3cb2498bbaee7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa348c03d00bb94f8d146aa44b3087d2f057daf7da39bac536200062519b6d51.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -639,40 +639,13 @@
             "data": "LambdalessProviderConnection803AC994"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Log": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Log/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdalessProviderLogA6A71739"
-          }
-        ],
         "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/StateMachine": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "stateMachineType": "EXPRESS",
               "queryLanguage": "JSONata",
-              "definitionBody": "*",
-              "logs": {
-                "level": "ALL",
-                "includeExecutionData": true,
-                "destination": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
+              "definitionBody": "*"
             }
           },
           {
@@ -785,14 +758,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
               "attachInlinePolicy": [
                 "*"
               ]
@@ -831,14 +796,6 @@
             "data": {
               "attachToRole": [
                 "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
               ]
             }
           },
@@ -1011,6 +968,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "LambdalessProviderLogA6A71739": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdalessProviderLogA6A71739",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "RestrictDefaultSecurityGroupIntegTest"
@@ -1032,7 +998,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/61b3d794ec69e909fc30077324986006e4d22d9850a202d43e91314ad439738b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3de883473f6174d9b9847a7b62f8258bc55c50cde2a4bf9951ffbd09eb0edb2b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
