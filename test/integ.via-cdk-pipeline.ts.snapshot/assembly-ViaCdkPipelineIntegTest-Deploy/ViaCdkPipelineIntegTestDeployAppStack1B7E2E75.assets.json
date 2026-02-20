@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "3e56ccf9c66dd4d560e8002fd06292ef85e68798bd70ca609542a01df87652f7": {
+      "displayName": "Deploy-AppStack Template",
+      "source": {
+        "path": "ViaCdkPipelineIntegTestDeployAppStack1B7E2E75.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a86689d8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3e56ccf9c66dd4d560e8002fd06292ef85e68798bd70ca609542a01df87652f7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,31 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg ViaCdkPipelineIntegTestPipeline404AAC65.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.c8915746927b1908d874da38deb14c0ab3d3b698fe" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN Deploy" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Deploy" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth" -> "BEGIN Deploy";
+"BEGIN Deploy.AppStack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Deploy.AppStack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Deploy.AppStack.Deploy";
+"Deploy.AppStack.Prepare" -> "Deploy.AppStack.Deploy";
+"Deploy.AppStack.Prepare";
+"Build.Synth" -> "Deploy.AppStack.Prepare";
+"BEGIN Deploy.AppStack" -> "Deploy.AppStack.Prepare";
+"Deploy.AppStack.Deploy" -> "END Deploy.AppStack";
+"BEGIN Deploy" -> "BEGIN Deploy.AppStack";
+"END Deploy.AppStack" -> "END Deploy";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.c8915746927b1908d874da38deb14c0ab3d3b698fe";
+"BEGIN Source" -> "Source.c8915746927b1908d874da38deb14c0ab3d3b698fe";
+"Source.c8915746927b1908d874da38deb14c0ab3d3b698fe" -> "END Source";
+}

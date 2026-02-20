@@ -17,6 +17,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   ],
   eslintOptions: {
     dirs: ['src'],
+    ignorePatterns: ['test/**/*.snapshot/**'],
     prettier: true,
   },
   prettier: true,
