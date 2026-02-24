@@ -3,14 +3,10 @@ import {
   Condition,
   IChainable,
   INextable,
-  IntegrationPattern,
-  IStateMachine,
   Pass,
   State,
   StateMachineFragment,
-  TaskInput,
 } from 'aws-cdk-lib/aws-stepfunctions';
-import { StepFunctionsStartExecution } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
 
 export interface CustomResourceFlowProps {
@@ -48,40 +44,5 @@ export class CustomResourceFlow extends StateMachineFragment {
 
     this.startState = init;
     this.endStates = choice.endStates;
-  }
-}
-
-export interface OriginalStepFunctionsFlowProps {
-  readonly stateMachine: IStateMachine;
-}
-export class OriginalStepFunctionsFlow extends StateMachineFragment {
-  readonly startState: State;
-  readonly endStates: INextable[];
-  constructor(
-    scope: Construct,
-    id: string,
-    props: OriginalStepFunctionsFlowProps,
-  ) {
-    super(scope, id);
-    const startExecution = StepFunctionsStartExecution.jsonata(
-      this,
-      'StartExecution',
-      {
-        stateMachine: props.stateMachine,
-        input: TaskInput.fromObject({
-          RequestType: `{% $RequestType %}`,
-          StackId: `{% $StackId %}`,
-          RequestId: `{% $RequestId %}`,
-          ResourceType: `{% $ResourceType %}`,
-          LogicalResourceId: `{% $LogicalResourceId %}`,
-          PhysicalResourceId: `{% $PhysicalResourceId %}`,
-          ResourceProperties: `{% $ResourceProperties %}`,
-          OldResourceProperties: `{% $OldResourceProperties %}`,
-        }),
-        integrationPattern: IntegrationPattern.RUN_JOB,
-      },
-    );
-    this.startState = startExecution;
-    this.endStates = [startExecution];
   }
 }
