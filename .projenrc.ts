@@ -29,7 +29,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   deps: [],
   description:
     'AWS CDK construct library for creating CloudFormation custom resources without Lambda functions, using Step Functions instead',
-  devDeps: ['@aws-cdk/integ-tests-alpha@2.183.0-alpha.0'],
+  devDeps: ['@aws-cdk/integ-tests-alpha'],
   githubOptions: {
     pullRequestLintOptions: {
       semanticTitleOptions: {

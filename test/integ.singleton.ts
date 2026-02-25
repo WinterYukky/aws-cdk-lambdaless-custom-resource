@@ -1,9 +1,9 @@
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import {
+  DefinitionBody,
   Pass,
   StateMachine,
-  DefinitionBody,
 } from 'aws-cdk-lib/aws-stepfunctions';
 import { CustomResourceFlow, LambdalessCustomResource } from '../src';
 
@@ -51,6 +51,11 @@ const cr2 = new LambdalessCustomResource(stack, 'CustomResource2', {
   },
 });
 
+const integ = new IntegTest(app, 'SingletonTest', {
+  testCases: [stack],
+  diffAssets: true,
+});
+
 // Output to verify both resources work independently
 new cdk.CfnOutput(stack, 'Message1', {
   value: cr1.getAttString('message'),
@@ -60,7 +65,19 @@ new cdk.CfnOutput(stack, 'Message2', {
   value: cr2.getAttString('message'),
 });
 
-new IntegTest(app, 'SingletonTest', {
-  testCases: [stack],
-  diffAssets: true,
-});
+// Verify both custom resources return correct values independently
+const describe = integ.assertions.awsApiCall(
+  'CloudFormation',
+  'describeStacks',
+  { StackName: stack.stackName },
+);
+
+describe.assertAtPath(
+  'Stacks.0.Outputs.0.OutputValue',
+  ExpectedResult.stringLikeRegexp('second'),
+);
+
+describe.assertAtPath(
+  'Stacks.0.Outputs.1.OutputValue',
+  ExpectedResult.stringLikeRegexp('first'),
+);

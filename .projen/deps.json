@@ -2,7 +2,6 @@
   "dependencies": [
     {
       "name": "@aws-cdk/integ-tests-alpha",
-      "version": "2.183.0-alpha.0",
       "type": "build"
     },
     {
