@@ -20,6 +20,7 @@ import {
 } from 'aws-cdk-lib/aws-stepfunctions';
 import {
   CallAwsService,
+  CallAwsServiceJsonataProps,
   CallAwsServiceProps,
   HttpInvoke,
 } from 'aws-cdk-lib/aws-stepfunctions-tasks';
@@ -38,11 +39,15 @@ interface ConditionalCallAwsServiceProps extends CallAwsServiceProps {
   iamConditions?: Record<string, iam.Condition>;
 }
 
+interface ConditionalCallAwsServiceJsonataProps extends CallAwsServiceJsonataProps {
+  iamConditions?: Record<string, iam.Condition>;
+}
+
 class ConditionalCallAwsService extends CallAwsService {
   public static jsonata(
     scope: Construct,
     id: string,
-    props: ConditionalCallAwsServiceProps,
+    props: ConditionalCallAwsServiceJsonataProps,
   ) {
     return new ConditionalCallAwsService(scope, id, {
       ...props,
