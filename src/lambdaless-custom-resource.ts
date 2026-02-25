@@ -34,13 +34,15 @@ const DENY_CONDITION: Record<string, iam.Condition> = {
  * Use with impossible conditions to disable auto-generated policies when
  * actual permissions are granted separately (e.g. via grantStartExecution).
  */
+interface ConditionalCallAwsServiceProps extends CallAwsServiceProps {
+  iamConditions?: Record<string, iam.Condition>;
+}
+
 class ConditionalCallAwsService extends CallAwsService {
   public static jsonata(
     scope: Construct,
     id: string,
-    props: CallAwsServiceProps & {
-      iamConditions?: Record<string, iam.Condition>;
-    },
+    props: ConditionalCallAwsServiceProps,
   ) {
     return new ConditionalCallAwsService(scope, id, {
       ...props,
@@ -50,9 +52,7 @@ class ConditionalCallAwsService extends CallAwsService {
   constructor(
     scope: Construct,
     id: string,
-    props: CallAwsServiceProps & {
-      iamConditions?: Record<string, iam.Condition>;
-    },
+    props: ConditionalCallAwsServiceProps,
   ) {
     super(scope, id, props);
     this.taskPolicies![0].addConditions(props.iamConditions ?? {});
