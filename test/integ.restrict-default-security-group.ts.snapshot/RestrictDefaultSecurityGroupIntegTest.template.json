@@ -295,7 +295,7 @@
     }
    }
   },
-  "StateMachineRoleB840431D": {
+  "RestrictDefaultSGStateMachineRole014DC528": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -312,7 +312,7 @@
     }
    }
   },
-  "StateMachineRoleDefaultPolicyDF1E6607": {
+  "RestrictDefaultSGStateMachineRoleDefaultPolicy4B169C2B": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -355,50 +355,50 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
+    "PolicyName": "RestrictDefaultSGStateMachineRoleDefaultPolicy4B169C2B",
     "Roles": [
      {
-      "Ref": "StateMachineRoleB840431D"
+      "Ref": "RestrictDefaultSGStateMachineRole014DC528"
      }
     ]
    }
   },
-  "StateMachine2E01A3A5": {
+  "RestrictDefaultSGStateMachineFD1CE043": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"RevokeRules on Create: RevokeSecurityGroupEgress\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"New Security Group?\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"AuthorizeRules on Delete: AuthorizeSecurityGroupIngress\"}]},\"RevokeRules on Create: RevokeSecurityGroupEgress\":{\"QueryLanguage\":\"JSONata\",\"Next\":\"RevokeRules on Create: RevokeSecurityGroupIngress\",\"Catch\":[{\"Output\":\"{% $states.errorOutput %}\",\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"RevokeRules on Create: RevokeSecurityGroupEgressCatch\"}],\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"IpRanges\":[{\"CidrIp\":\"0.0.0.0/0\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
+       "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"RevokeOnCreate: RevokeEgress\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"NewSecurityGroup?\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"AuthorizeOnDelete: AuthorizeIngress\"}]},\"RevokeOnCreate: RevokeEgress\":{\"QueryLanguage\":\"JSONata\",\"Next\":\"RevokeOnCreate: RevokeIngress\",\"Catch\":[{\"Output\":\"{% $states.errorOutput %}\",\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"RevokeOnCreate: RevokeEgressCatch\"}],\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"IpRanges\":[{\"CidrIp\":\"0.0.0.0/0\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:ec2:revokeSecurityGroupEgress\"},\"RevokeRules on Create: RevokeSecurityGroupIngress\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Catch\":[{\"Output\":\"{% $states.errorOutput %}\",\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"RevokeRules on Create: RevokeSecurityGroupIngressCatch\"}],\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"UserIdGroupPairs\":[{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"UserId\":\"{% $ResourceProperties.Account %}\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
+       ":states:::aws-sdk:ec2:revokeSecurityGroupEgress\"},\"RevokeOnCreate: RevokeIngress\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Catch\":[{\"Output\":\"{% $states.errorOutput %}\",\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"RevokeOnCreate: RevokeIngressCatch\"}],\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"UserIdGroupPairs\":[{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"UserId\":\"{% $ResourceProperties.Account %}\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:ec2:revokeSecurityGroupIngress\"},\"RevokeRules on Create: RevokeSecurityGroupEgressCatch\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $contains($states.input.Cause, 'The specified rule does not exist in this security group') %}\",\"Next\":\"RevokeRules on Create: RevokeSecurityGroupIngress\"}],\"Default\":\"RevokeRules on Create: Fail\"},\"RevokeRules on Create: Fail\":{\"Type\":\"Fail\",\"QueryLanguage\":\"JSONata\",\"Error\":\"{% $states.input.Error %}\",\"Cause\":\"{% $states.input.Cause %}\"},\"RevokeRules on Create: RevokeSecurityGroupIngressCatch\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $contains($states.input.Cause, 'The specified rule does not exist in this security group') %}\",\"Next\":\"RevokeRules on Create: RevokeSecurityGroupIngressPass\"}],\"Default\":\"RevokeRules on Create: Fail\"},\"RevokeRules on Create: RevokeSecurityGroupIngressPass\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"New Security Group?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $OldResourceProperties.DefaultSecurityGroupId != $ResourceProperties.DefaultSecurityGroupId %}\",\"Next\":\"AuthorizeRules on Update: AuthorizeSecurityGroupIngress\"}],\"Default\":\"No changes\"},\"No changes\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"AuthorizeRules on Update: AuthorizeSecurityGroupIngress\":{\"QueryLanguage\":\"JSONata\",\"Next\":\"AuthorizeRules on Update: AuthorizeSecurityGroupEgress\",\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $OldResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"UserIdGroupPairs\":[{\"GroupId\":\"{% $OldResourceProperties.DefaultSecurityGroupId %}\",\"UserId\":\"{% $ResourceProperties.Account %}\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
+       ":states:::aws-sdk:ec2:revokeSecurityGroupIngress\"},\"RevokeOnCreate: RevokeEgressCatch\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $contains($states.input.Cause, 'The specified rule does not exist in this security group') %}\",\"Next\":\"RevokeOnCreate: RevokeIngress\"}],\"Default\":\"RevokeOnCreate: Fail\"},\"RevokeOnCreate: Fail\":{\"Type\":\"Fail\",\"QueryLanguage\":\"JSONata\",\"Error\":\"{% $states.input.Error %}\",\"Cause\":\"{% $states.input.Cause %}\"},\"RevokeOnCreate: RevokeIngressCatch\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $contains($states.input.Cause, 'The specified rule does not exist in this security group') %}\",\"Next\":\"RevokeOnCreate: RevokeIngressPass\"}],\"Default\":\"RevokeOnCreate: Fail\"},\"RevokeOnCreate: RevokeIngressPass\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"NewSecurityGroup?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $OldResourceProperties.DefaultSecurityGroupId != $ResourceProperties.DefaultSecurityGroupId %}\",\"Next\":\"AuthorizeOnUpdate: AuthorizeIngress\"}],\"Default\":\"NoChanges\"},\"NoChanges\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"AuthorizeOnUpdate: AuthorizeIngress\":{\"QueryLanguage\":\"JSONata\",\"Next\":\"AuthorizeOnUpdate: AuthorizeEgress\",\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $OldResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"UserIdGroupPairs\":[{\"GroupId\":\"{% $OldResourceProperties.DefaultSecurityGroupId %}\",\"UserId\":\"{% $ResourceProperties.Account %}\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:ec2:authorizeSecurityGroupIngress\"},\"AuthorizeRules on Update: AuthorizeSecurityGroupEgress\":{\"QueryLanguage\":\"JSONata\",\"Next\":\"RevokeRules on Update: RevokeSecurityGroupEgress\",\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $OldResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"IpRanges\":[{\"CidrIp\":\"0.0.0.0/0\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
+       ":states:::aws-sdk:ec2:authorizeSecurityGroupIngress\"},\"AuthorizeOnUpdate: AuthorizeEgress\":{\"QueryLanguage\":\"JSONata\",\"Next\":\"RevokeOnUpdate: RevokeEgress\",\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $OldResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"IpRanges\":[{\"CidrIp\":\"0.0.0.0/0\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:ec2:authorizeSecurityGroupEgress\"},\"RevokeRules on Update: RevokeSecurityGroupEgress\":{\"QueryLanguage\":\"JSONata\",\"Next\":\"RevokeRules on Update: RevokeSecurityGroupIngress\",\"Catch\":[{\"Output\":\"{% $states.errorOutput %}\",\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"RevokeRules on Update: RevokeSecurityGroupEgressCatch\"}],\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"IpRanges\":[{\"CidrIp\":\"0.0.0.0/0\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
+       ":states:::aws-sdk:ec2:authorizeSecurityGroupEgress\"},\"RevokeOnUpdate: RevokeEgress\":{\"QueryLanguage\":\"JSONata\",\"Next\":\"RevokeOnUpdate: RevokeIngress\",\"Catch\":[{\"Output\":\"{% $states.errorOutput %}\",\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"RevokeOnUpdate: RevokeEgressCatch\"}],\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"IpRanges\":[{\"CidrIp\":\"0.0.0.0/0\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:ec2:revokeSecurityGroupEgress\"},\"RevokeRules on Update: RevokeSecurityGroupIngress\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Catch\":[{\"Output\":\"{% $states.errorOutput %}\",\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"RevokeRules on Update: RevokeSecurityGroupIngressCatch\"}],\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"UserIdGroupPairs\":[{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"UserId\":\"{% $ResourceProperties.Account %}\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
+       ":states:::aws-sdk:ec2:revokeSecurityGroupEgress\"},\"RevokeOnUpdate: RevokeIngress\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Catch\":[{\"Output\":\"{% $states.errorOutput %}\",\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"RevokeOnUpdate: RevokeIngressCatch\"}],\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"UserIdGroupPairs\":[{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"UserId\":\"{% $ResourceProperties.Account %}\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:ec2:revokeSecurityGroupIngress\"},\"RevokeRules on Update: RevokeSecurityGroupEgressCatch\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $contains($states.input.Cause, 'The specified rule does not exist in this security group') %}\",\"Next\":\"RevokeRules on Update: RevokeSecurityGroupIngress\"}],\"Default\":\"RevokeRules on Update: Fail\"},\"RevokeRules on Update: Fail\":{\"Type\":\"Fail\",\"QueryLanguage\":\"JSONata\",\"Error\":\"{% $states.input.Error %}\",\"Cause\":\"{% $states.input.Cause %}\"},\"RevokeRules on Update: RevokeSecurityGroupIngressCatch\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $contains($states.input.Cause, 'The specified rule does not exist in this security group') %}\",\"Next\":\"RevokeRules on Update: RevokeSecurityGroupIngressPass\"}],\"Default\":\"RevokeRules on Update: Fail\"},\"RevokeRules on Update: RevokeSecurityGroupIngressPass\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"AuthorizeRules on Delete: AuthorizeSecurityGroupIngress\":{\"QueryLanguage\":\"JSONata\",\"Next\":\"AuthorizeRules on Delete: AuthorizeSecurityGroupEgress\",\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"UserIdGroupPairs\":[{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"UserId\":\"{% $ResourceProperties.Account %}\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
+       ":states:::aws-sdk:ec2:revokeSecurityGroupIngress\"},\"RevokeOnUpdate: RevokeEgressCatch\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $contains($states.input.Cause, 'The specified rule does not exist in this security group') %}\",\"Next\":\"RevokeOnUpdate: RevokeIngress\"}],\"Default\":\"RevokeOnUpdate: Fail\"},\"RevokeOnUpdate: Fail\":{\"Type\":\"Fail\",\"QueryLanguage\":\"JSONata\",\"Error\":\"{% $states.input.Error %}\",\"Cause\":\"{% $states.input.Cause %}\"},\"RevokeOnUpdate: RevokeIngressCatch\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $contains($states.input.Cause, 'The specified rule does not exist in this security group') %}\",\"Next\":\"RevokeOnUpdate: RevokeIngressPass\"}],\"Default\":\"RevokeOnUpdate: Fail\"},\"RevokeOnUpdate: RevokeIngressPass\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"AuthorizeOnDelete: AuthorizeIngress\":{\"QueryLanguage\":\"JSONata\",\"Next\":\"AuthorizeOnDelete: AuthorizeEgress\",\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"UserIdGroupPairs\":[{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"UserId\":\"{% $ResourceProperties.Account %}\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:ec2:authorizeSecurityGroupIngress\"},\"AuthorizeRules on Delete: AuthorizeSecurityGroupEgress\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"IpRanges\":[{\"CidrIp\":\"0.0.0.0/0\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
+       ":states:::aws-sdk:ec2:authorizeSecurityGroupIngress\"},\"AuthorizeOnDelete: AuthorizeEgress\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Type\":\"Task\",\"Arguments\":{\"GroupId\":\"{% $ResourceProperties.DefaultSecurityGroupId %}\",\"IpPermissions\":[{\"IpRanges\":[{\"CidrIp\":\"0.0.0.0/0\"}],\"IpProtocol\":\"-1\"}]},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -408,19 +408,19 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
+      "RestrictDefaultSGStateMachineRole014DC528",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "StateMachineRoleDefaultPolicyDF1E6607",
-    "StateMachineRoleB840431D"
+    "RestrictDefaultSGStateMachineRoleDefaultPolicy4B169C2B",
+    "RestrictDefaultSGStateMachineRole014DC528"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "RestrictedSecurityGroupC3CF557B": {
+  "RestrictDefaultSG4A9037CD": {
    "Type": "Custom::VpcRestrictDefaultSG",
    "Properties": {
     "ServiceToken": {
@@ -526,16 +526,16 @@
      "Ref": "AWS::AccountId"
     },
     "stateMachineArn": {
-     "Ref": "StateMachine2E01A3A5"
+     "Ref": "RestrictDefaultSGStateMachineFD1CE043"
     }
    },
    "DependsOn": [
-    "RestrictedSecurityGroupPolicyB8A33261"
+    "RestrictDefaultSGPolicyB2BC8CF4"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "RestrictedSecurityGroupPolicyB8A33261": {
+  "RestrictDefaultSGPolicyB2BC8CF4": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -548,7 +548,7 @@
        ],
        "Effect": "Allow",
        "Resource": {
-        "Ref": "StateMachine2E01A3A5"
+        "Ref": "RestrictDefaultSGStateMachineFD1CE043"
        }
       },
       {
@@ -582,7 +582,7 @@
              "Fn::Split": [
               ":",
               {
-               "Ref": "StateMachine2E01A3A5"
+               "Ref": "RestrictDefaultSGStateMachineFD1CE043"
               }
              ]
             }
@@ -605,7 +605,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "RestrictedSecurityGroupPolicyB8A33261",
+    "PolicyName": "RestrictDefaultSGPolicyB2BC8CF4",
     "Roles": [
      {
       "Ref": "LambdalessProviderStateMachineRole4BDCD64E"
