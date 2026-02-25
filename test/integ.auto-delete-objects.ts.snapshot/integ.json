@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "AutoDeleteObjectsTest/DefaultTest": {
+      "stacks": [
+        "AutoDeleteObjectsIntegTest"
+      ],
+      "assertionStack": "AutoDeleteObjectsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AutoDeleteObjectsTestDefaultTestDeployAssertC4D0F22B"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
