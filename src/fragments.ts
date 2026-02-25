@@ -1,3 +1,4 @@
+import * as cdk from 'aws-cdk-lib';
 import {
   Choice,
   Condition,
@@ -10,8 +11,23 @@ import {
 import { Construct } from 'constructs';
 
 export interface CustomResourceFlowProps {
-  readonly onCreate: IChainable;
+  /**
+   * The workflow to execute on Create.
+   *
+   * @default - the onUpdate workflow
+   */
+  readonly onCreate?: IChainable;
+  /**
+   * The workflow to execute on Update.
+   *
+   * @default - no-op
+   */
   readonly onUpdate?: IChainable;
+  /**
+   * The workflow to execute on Delete.
+   *
+   * @default - no-op
+   */
   readonly onDelete?: IChainable;
 }
 
@@ -21,11 +37,19 @@ export class CustomResourceFlow extends StateMachineFragment {
   constructor(scope: Construct, id: string, props: CustomResourceFlowProps) {
     super(scope, id);
 
+    if (!props.onCreate && !props.onUpdate && !props.onDelete) {
+      throw new cdk.UnscopedValidationError(
+        'At least one of `onCreate`, `onUpdate` or `onDelete` must be specified.',
+      );
+    }
+
+    const onCreate =
+      props.onCreate ?? props.onUpdate ?? Pass.jsonata(this, 'Create');
     const onUpdate = props.onUpdate ?? Pass.jsonata(this, 'Update');
     const onDelete = props.onDelete ?? Pass.jsonata(this, 'Delete');
 
     const choice = Choice.jsonata(this, 'Which Request Type?')
-      .when(Condition.jsonata(`{% $RequestType = "Create" %}`), props.onCreate)
+      .when(Condition.jsonata(`{% $RequestType = "Create" %}`), onCreate)
       .when(Condition.jsonata(`{% $RequestType = "Update" %}`), onUpdate)
       .when(Condition.jsonata(`{% $RequestType = "Delete" %}`), onDelete);
     const init = Pass.jsonata(this, 'Initialize', {

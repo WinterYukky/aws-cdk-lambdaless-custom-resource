@@ -440,19 +440,22 @@ const customResourceFlowProps: CustomResourceFlowProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.CustomResourceFlowProps.property.onCreate">onCreate</a></code> | <code>aws-cdk-lib.aws_stepfunctions.IChainable</code> | *No description.* |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.CustomResourceFlowProps.property.onDelete">onDelete</a></code> | <code>aws-cdk-lib.aws_stepfunctions.IChainable</code> | *No description.* |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.CustomResourceFlowProps.property.onUpdate">onUpdate</a></code> | <code>aws-cdk-lib.aws_stepfunctions.IChainable</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.CustomResourceFlowProps.property.onCreate">onCreate</a></code> | <code>aws-cdk-lib.aws_stepfunctions.IChainable</code> | The workflow to execute on Create. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.CustomResourceFlowProps.property.onDelete">onDelete</a></code> | <code>aws-cdk-lib.aws_stepfunctions.IChainable</code> | The workflow to execute on Delete. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.CustomResourceFlowProps.property.onUpdate">onUpdate</a></code> | <code>aws-cdk-lib.aws_stepfunctions.IChainable</code> | The workflow to execute on Update. |
 
 ---
 
-##### `onCreate`<sup>Required</sup> <a name="onCreate" id="aws-cdk-lambdaless-custom-resource.CustomResourceFlowProps.property.onCreate"></a>
+##### `onCreate`<sup>Optional</sup> <a name="onCreate" id="aws-cdk-lambdaless-custom-resource.CustomResourceFlowProps.property.onCreate"></a>
 
 ```typescript
 public readonly onCreate: IChainable;
 ```
 
 - *Type:* aws-cdk-lib.aws_stepfunctions.IChainable
+- *Default:* the onUpdate workflow
+
+The workflow to execute on Create.
 
 ---
 
@@ -463,6 +466,9 @@ public readonly onDelete: IChainable;
 ```
 
 - *Type:* aws-cdk-lib.aws_stepfunctions.IChainable
+- *Default:* no-op
+
+The workflow to execute on Delete.
 
 ---
 
@@ -473,6 +479,9 @@ public readonly onUpdate: IChainable;
 ```
 
 - *Type:* aws-cdk-lib.aws_stepfunctions.IChainable
+- *Default:* no-op
+
+The workflow to execute on Update.
 
 ---
 
