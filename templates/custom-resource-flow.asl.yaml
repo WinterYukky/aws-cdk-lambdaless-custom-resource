@@ -1,0 +1,41 @@
+Comment: Custom resource flow template. Replace Create, Update, and Delete states with your own logic.
+QueryLanguage: JSONata
+StartAt: Initialize
+States:
+  Initialize:
+    Type: Pass
+    Next: "Which Request Type?"
+    Assign:
+      RequestType: "{% $states.input.RequestType %}"
+      StackId: "{% $states.input.StackId %}"
+      RequestId: "{% $states.input.RequestId %}"
+      ResourceType: "{% $states.input.ResourceType %}"
+      LogicalResourceId: "{% $states.input.LogicalResourceId %}"
+      PhysicalResourceId: "{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}"
+      ResourceProperties: "{% $states.input.ResourceProperties %}"
+      OldResourceProperties: "{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}"
+
+  "Which Request Type?":
+    Type: Choice
+    Choices:
+      - Condition: '{% $RequestType = "Create" %}'
+        Next: Create
+      - Condition: '{% $RequestType = "Update" %}'
+        Next: Update
+      - Condition: '{% $RequestType = "Delete" %}'
+        Next: Delete
+
+  Create:
+    Type: Pass
+    Comment: Replace with your Create logic
+    End: true
+
+  Update:
+    Type: Pass
+    Comment: Replace with your Update logic
+    End: true
+
+  Delete:
+    Type: Pass
+    Comment: Replace with your Delete logic
+    End: true
