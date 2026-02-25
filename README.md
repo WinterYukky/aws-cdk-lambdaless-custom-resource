@@ -13,10 +13,11 @@ graph LR
     CFn[CloudFormation] -->|serviceToken| SNS[SNS Topic]
     SNS --> SQS[SQS Queue]
     SQS --> Pipes[EventBridge Pipes]
-    Pipes --> Express[Express State Machine]
+    Pipes -->|invoke| Express[Express State Machine]
     Express -->|startExecution| Standard[Your State Machine]
     Express -->|describeExecution| Standard
     Express -->|HttpInvoke| CFn
+    Express -.->|timeout| Pipes
 ```
 
 ## Installation
