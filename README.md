@@ -79,7 +79,9 @@ new cdk.CfnOutput(this, 'Message', {
 
 ## Examples
 
-See [examples](./examples) directory for more advanced use cases.
+- [Restrict default VPC security group](./test/integ.restrict-default-security-group.ts) - Revoke/authorize default security group rules using Step Functions
+- [Singleton provider](./test/integ.singleton.ts) - Multiple custom resources sharing a single provider
+- [Deploy via CDK Pipelines](./test/integ.via-cdk-pipeline.ts) - Verify deployment through CDK Pipelines
 
 ## API Reference
 
