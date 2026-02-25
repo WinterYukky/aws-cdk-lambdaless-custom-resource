@@ -26,14 +26,14 @@ import {
 } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
 
+// Impossible condition to disable auto-generated IAM policies from CallAwsService.
+// Actual permissions are granted per state machine via grantStartExecution/grant.
 const DENY_CONDITION: Record<string, iam.Condition> = {
   StringEquals: { 'aws:RequestedRegion': 'DISABLED' },
 };
 
 /**
  * CallAwsService that supports adding IAM conditions to auto-generated policies.
- * Use with impossible conditions to disable auto-generated policies when
- * actual permissions are granted separately (e.g. via grantStartExecution).
  */
 interface ConditionalCallAwsServiceProps extends CallAwsServiceProps {
   iamConditions?: Record<string, iam.Condition>;
