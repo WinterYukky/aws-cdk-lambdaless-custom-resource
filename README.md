@@ -75,6 +75,10 @@ new cdk.CfnOutput(this, 'Message', {
 
 See the [examples](./examples) directory for real-world patterns.
 
+## ASL Templates
+
+The [templates](./templates) directory contains the ASL (Amazon States Language) definition used by the internal orchestrator. This can be a useful reference when building your own state machines.
+
 ## State Machine Requirements
 
 The state machine you pass to `LambdalessCustomResource` is invoked by the internal orchestrator whenever CloudFormation sends a Create, Update, or Delete event. You can use `CustomResourceFlow` to route these events, or build your own state machine from scratch.
