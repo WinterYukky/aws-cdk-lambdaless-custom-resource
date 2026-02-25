@@ -80,55 +80,43 @@ new cdk.CfnOutput(this, 'Message', {
 ## Examples
 
 - [Restrict default VPC security group](./test/integ.restrict-default-security-group.ts) - Revoke/authorize default security group rules using Step Functions
-- [Singleton provider](./test/integ.singleton.ts) - Multiple custom resources sharing a single provider
-- [Deploy via CDK Pipelines](./test/integ.via-cdk-pipeline.ts) - Verify deployment through CDK Pipelines
 
-## API Reference
+## Input
 
-### `LambdalessCustomResource`
+Your workflow receives the following input via `$states.input` (or as variables when using `CustomResourceFlow`):
 
-Creates a CloudFormation custom resource backed by Step Functions.
+| Variable | Description |
+|---|---|
+| `$RequestType` | `"Create"`, `"Update"`, or `"Delete"` |
+| `$ResourceProperties` | Properties passed to the custom resource |
+| `$OldResourceProperties` | Previous properties (Update only, otherwise `null`) |
+| `$PhysicalResourceId` | Physical resource ID (Create: `null`) |
+| `$LogicalResourceId` | Logical resource ID |
+| `$StackId` | CloudFormation stack ID |
+| `$RequestId` | Unique request ID |
 
-**Props:**
-- `stateMachine` - The Step Functions state machine that implements the custom resource logic
-- `properties` - Properties to pass to the workflow
-- `serviceTimeout` - Maximum time for the custom resource operation (default: 3600 seconds)
-- `resourceType` - Custom resource type name (default: `AWS::CloudFormation::CustomResource`)
+## Output
 
-### `CustomResourceFlow`
+Your workflow should return:
 
-A Step Functions fragment that routes requests based on `RequestType` (Create/Update/Delete).
-
-**Props:**
-- `onCreate` - State machine fragment to execute on Create
-- `onUpdate` - State machine fragment to execute on Update (optional)
-- `onDelete` - State machine fragment to execute on Delete (optional)
-
-**Available Variables:**
-- `$RequestType` - "Create", "Update", or "Delete"
-- `$ResourceProperties` - Properties passed to the custom resource
-- `$OldResourceProperties` - Previous properties (Update only)
-- `$PhysicalResourceId` - Physical resource ID
-- `$LogicalResourceId` - Logical resource ID
-- `$StackId` - CloudFormation stack ID
-- `$RequestId` - Unique request ID
-
-## Output Format
-
-Your workflow should output:
-
-```typescript
+```json
 {
-  PhysicalResourceId: 'unique-id',  // Required on Create
-  Data: {                            // Optional
-    key1: 'value1',
-    key2: 'value2',
+  "PhysicalResourceId": "unique-id",
+  "Data": {
+    "key1": "value1",
+    "key2": "value2"
   },
-  NoEcho: false,                     // Optional
+  "NoEcho": false
 }
 ```
 
-Access outputs via `getAtt()` or `getAttString()`:
+| Field | Required | Description |
+|---|---|---|
+| `PhysicalResourceId` | Yes (on Create) | Unique identifier for the resource. If omitted, `RequestId` is used. |
+| `Data` | No | Key-value pairs accessible via `getAtt()` / `getAttString()`. Nested objects are flattened with dot notation. |
+| `NoEcho` | No | If `true`, masks the output in CloudFormation events. Defaults to `false`. |
+
+Access outputs in your CDK code:
 
 ```typescript
 customResource.getAttString('key1')  // Returns 'value1'
