@@ -179,7 +179,7 @@ const vpc = new Vpc(stack, 'Vpc', {
   restrictDefaultSecurityGroup: false,
 });
 
-const workflow = new CustomResourceFlow(stack, 'CustomResourceFlow', {
+const flow = new CustomResourceFlow(stack, 'CustomResourceFlow', {
   onCreate: new RevokeRules(stack, 'RevokeRules on Create', {
     vpcDefaultSecurityGroup: vpc.vpcDefaultSecurityGroup,
     resourceProperties: 'ResourceProperties',
@@ -209,8 +209,8 @@ const workflow = new CustomResourceFlow(stack, 'CustomResourceFlow', {
 });
 
 new LambdalessCustomResource(stack, 'RestrictedSecurityGroup', {
-  workflow: new StateMachine(stack, 'StateMachine', {
-    definitionBody: DefinitionBody.fromChainable(workflow),
+  stateMachine: new StateMachine(stack, 'StateMachine', {
+    definitionBody: DefinitionBody.fromChainable(flow),
   }),
   properties: {
     DefaultSecurityGroupId: vpc.vpcDefaultSecurityGroup,

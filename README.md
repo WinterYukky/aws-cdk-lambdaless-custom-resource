@@ -43,7 +43,7 @@ import { CustomResourceFlow, LambdalessCustomResource } from 'aws-cdk-lambdaless
 import { Pass, StateMachine, DefinitionBody } from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 
-const workflow = new CustomResourceFlow(this, 'ExampleFlow', {
+const flow = new CustomResourceFlow(this, 'ExampleFlow', {
   onCreate: Pass.jsonata(this, 'Create', {
     outputs: {
       PhysicalResourceId: 'example-id',
@@ -63,8 +63,8 @@ const workflow = new CustomResourceFlow(this, 'ExampleFlow', {
 });
 
 const customResource = new LambdalessCustomResource(this, 'MyCustomResource', {
-  workflow: new StateMachine(this, 'StateMachine', {
-    definitionBody: DefinitionBody.fromChainable(workflow),
+  stateMachine: new StateMachine(this, 'StateMachine', {
+    definitionBody: DefinitionBody.fromChainable(flow),
   }),
   properties: {
     myProperty: 'Hello, World!',
@@ -88,7 +88,7 @@ See [examples](./examples) directory for more advanced use cases.
 Creates a CloudFormation custom resource backed by Step Functions.
 
 **Props:**
-- `workflow` - The Step Functions state machine that implements the custom resource logic
+- `stateMachine` - The Step Functions state machine that implements the custom resource logic
 - `properties` - Properties to pass to the workflow
 - `serviceTimeout` - Maximum time for the custom resource operation (default: 3600 seconds)
 - `resourceType` - Custom resource type name (default: `AWS::CloudFormation::CustomResource`)

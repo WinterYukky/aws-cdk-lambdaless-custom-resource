@@ -26,7 +26,7 @@ import {
 } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
 
-export interface LambdalessProviderProps {
+interface LambdalessProviderProps {
   // readonly workflow: IChainable;
 }
 
@@ -38,7 +38,7 @@ export interface LambdalessProviderProps {
 // - On retry, describeExecution finds the previous execution and responds to CloudFormation if completed
 // - Using RequestId as execution name ensures idempotency
 // - SQS default retention (4 days) is well beyond CloudFormation's max timeout (1 hour)
-export class LambdalessProvider extends Construct {
+class LambdalessProvider extends Construct {
   private readonly subscription: cdk.aws_sns.Subscription;
   readonly stateMachine: cdk.aws_stepfunctions.StateMachine;
 
@@ -236,7 +236,7 @@ export class LambdalessProvider extends Construct {
  * Properties to provide a Lambdaless custom resource
  */
 export interface LambdalessCustomResourceProps {
-  readonly workflow: IStateMachine;
+  readonly stateMachine: IStateMachine;
   /**
    * The maximum time that can elapse before a custom resource operation times out.
    *
@@ -326,11 +326,11 @@ export class LambdalessCustomResource extends Construct {
       serviceToken: framework.serviceToken,
       properties: {
         ...props.properties,
-        stateMachineArn: props.workflow.stateMachineArn,
+        stateMachineArn: props.stateMachine.stateMachineArn,
       },
     });
     const policy = new iam.Policy(this, 'Policy');
-    props.workflow.grantStartExecution(policy);
+    props.stateMachine.grantStartExecution(policy);
     framework.stateMachine.role.attachInlinePolicy(policy);
     this.resource.node.addDependency(policy);
     this.ref = this.resource.ref;

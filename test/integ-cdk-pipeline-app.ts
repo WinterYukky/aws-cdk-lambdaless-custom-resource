@@ -25,7 +25,7 @@ class AppStage extends cdk.Stage {
 
     const stack = new cdk.Stack(this, 'AppStack');
 
-    const workflow = new CustomResourceFlow(stack, 'Flow', {
+    const flow = new CustomResourceFlow(stack, 'Flow', {
       onCreate: Pass.jsonata(stack, 'Create', {
         outputs: {
           PhysicalResourceId: 'pipeline-resource',
@@ -37,8 +37,8 @@ class AppStage extends cdk.Stage {
     });
 
     new LambdalessCustomResource(stack, 'CustomResource', {
-      workflow: new StateMachine(stack, 'StateMachine', {
-        definitionBody: DefinitionBody.fromChainable(workflow),
+      stateMachine: new StateMachine(stack, 'StateMachine', {
+        definitionBody: DefinitionBody.fromChainable(flow),
       }),
       properties: {
         value: 'from-pipeline',

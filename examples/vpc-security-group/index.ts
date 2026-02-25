@@ -179,7 +179,7 @@ export class VpcSecurityGroupStack extends cdk.Stack {
       restrictDefaultSecurityGroup: false,
     });
 
-    const workflow = new CustomResourceFlow(this, 'CustomResourceFlow', {
+    const flow = new CustomResourceFlow(this, 'CustomResourceFlow', {
       onCreate: new RevokeRules(this, 'RevokeRules on Create', {
         vpcDefaultSecurityGroup: vpc.vpcDefaultSecurityGroup,
         resourceProperties: 'ResourceProperties',
@@ -209,8 +209,8 @@ export class VpcSecurityGroupStack extends cdk.Stack {
     });
 
     new LambdalessCustomResource(this, 'RestrictedSecurityGroup', {
-      workflow: new StateMachine(this, 'StateMachine', {
-        definitionBody: DefinitionBody.fromChainable(workflow),
+      stateMachine: new StateMachine(this, 'StateMachine', {
+        definitionBody: DefinitionBody.fromChainable(flow),
       }),
       properties: {
         DefaultSecurityGroupId: vpc.vpcDefaultSecurityGroup,
