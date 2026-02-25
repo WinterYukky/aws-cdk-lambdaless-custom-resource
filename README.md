@@ -10,23 +10,14 @@ Traditional CloudFormation custom resources require Lambda functions, which add 
 
 ```mermaid
 graph LR
-    A[CloudFormation] --> B[SNS Topic]
-    B --> C[SQS Queue]
-    C --> D[EventBridge Pipes]
-    D --> E[Express State Machine]
-    E --> F[Your Standard State Machine]
-    E --> G[describeExecution]
-    E --> H[HttpInvoke to CloudFormation]
-    E -.timeout.-> D
-    D -.retry.-> E
+    CFn[CloudFormation] -->|serviceToken| SNS[SNS Topic]
+    SNS --> SQS[SQS Queue]
+    SQS --> Pipes[EventBridge Pipes]
+    Pipes --> Express[Express State Machine]
+    Express -->|startExecution| Standard[Your State Machine]
+    Express -->|describeExecution| Standard
+    Express -->|HttpInvoke| CFn
 ```
-
-**Key Design:**
-- Express State Machine times out after 5 minutes, but user-defined Standard State Machines can run longer
-- On timeout, EventBridge Pipes retries the SQS message
-- On retry, `describeExecution` finds the previous execution and responds to CloudFormation if completed
-- Using `RequestId` as execution name ensures idempotency
-- SQS default retention (4 days) is well beyond CloudFormation's max timeout (1 hour)
 
 ## Installation
 
