@@ -20,8 +20,6 @@ import {
 } from 'aws-cdk-lib/aws-stepfunctions';
 import {
   CallAwsService,
-  CallAwsServiceJsonataProps,
-  CallAwsServiceProps,
   HttpInvoke,
 } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
@@ -122,32 +120,28 @@ class LambdalessProvider extends Construct {
     const stillRunning = Wait.jsonata(this, 'Still Running', {
       time: WaitTime.duration(cdk.Duration.seconds(1)),
     });
-    const startExecution = ConditionalCallAwsService.jsonata(
-      this,
-      'Start Execution',
-      {
-        action: 'startExecution',
-        service: 'sfn',
-        iamResources: ['*'],
-        iamAction: 'states:startExecution',
-        parameters: {
-          Name: '{% $RequestId %}',
-          Input: {
-            RequestType: `{% $RequestType %}`,
-            StackId: `{% $StackId %}`,
-            RequestId: `{% $RequestId %}`,
-            ResourceType: `{% $ResourceType %}`,
-            LogicalResourceId: `{% $LogicalResourceId %}`,
-            PhysicalResourceId: `{% $PhysicalResourceId %}`,
-            ResourceProperties: `{% $ResourceProperties %}`,
-            OldResourceProperties: `{% $OldResourceProperties %}`,
-          },
-          StateMachineArn: '{% $ResourceProperties.stateMachineArn %}',
+    const startExecution = CallAwsService.jsonata(this, 'Start Execution', {
+      action: 'startExecution',
+      service: 'sfn',
+      iamResources: ['*'],
+      iamAction: 'states:startExecution',
+      parameters: {
+        Name: '{% $RequestId %}',
+        Input: {
+          RequestType: `{% $RequestType %}`,
+          StackId: `{% $StackId %}`,
+          RequestId: `{% $RequestId %}`,
+          ResourceType: `{% $ResourceType %}`,
+          LogicalResourceId: `{% $LogicalResourceId %}`,
+          PhysicalResourceId: `{% $PhysicalResourceId %}`,
+          ResourceProperties: `{% $ResourceProperties %}`,
+          OldResourceProperties: `{% $OldResourceProperties %}`,
         },
+        StateMachineArn: '{% $ResourceProperties.stateMachineArn %}',
       },
-    ).next(stillRunning);
+    }).next(stillRunning);
 
-    const describeExecution = ConditionalCallAwsService.jsonata(
+    const describeExecution = CallAwsService.jsonata(
       this,
       'Describe Execution',
       {
@@ -357,35 +351,5 @@ export class LambdalessCustomResource extends Construct {
    */
   getAttString(attributeName: string): string {
     return this.resource.getAttString(attributeName);
-  }
-}
-
-interface ConditionalCallAwsServiceProps extends CallAwsServiceProps {
-  iamConditions?: Record<string, iam.Condition>;
-}
-interface ConditionalCallAwsServiceJsonataProps extends CallAwsServiceJsonataProps {
-  iamConditions?: Record<string, iam.Condition>;
-}
-class ConditionalCallAwsService extends CallAwsService {
-  /**
-   * A StepFunctions task using JSONata to call an AWS service API
-   */
-  public static jsonata(
-    scope: Construct,
-    id: string,
-    props: ConditionalCallAwsServiceJsonataProps,
-  ) {
-    return new ConditionalCallAwsService(scope, id, {
-      ...props,
-      queryLanguage: QueryLanguage.JSONATA,
-    });
-  }
-  constructor(
-    scope: Construct,
-    id: string,
-    props: ConditionalCallAwsServiceProps,
-  ) {
-    super(scope, id, props);
-    this.taskPolicies![0].addConditions(props.iamConditions ?? {});
   }
 }
