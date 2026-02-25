@@ -146,11 +146,66 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "states:StartExecution",
+       "Action": [
+        "states:ListExecutions",
+        "states:ListStateMachines",
+        "states:StartExecution"
+       ],
        "Effect": "Allow",
        "Resource": {
         "Ref": "StateMachine18AFC9B86"
        }
+      },
+      {
+       "Action": [
+        "states:DescribeExecution",
+        "states:DescribeStateMachineForExecution",
+        "states:GetExecutionHistory"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::Select": [
+            6,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "StateMachine18AFC9B86"
+              }
+             ]
+            }
+           ]
+          },
+          ":*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "states:DescribeActivity",
+        "states:DescribeStateMachine",
+        "states:ListActivities"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -266,6 +321,11 @@
         "states:describeExecution",
         "states:startExecution"
        ],
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestedRegion": "DISABLED"
+        }
+       },
        "Effect": "Allow",
        "Resource": "*"
       },
@@ -596,11 +656,66 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "states:StartExecution",
+       "Action": [
+        "states:ListExecutions",
+        "states:ListStateMachines",
+        "states:StartExecution"
+       ],
        "Effect": "Allow",
        "Resource": {
         "Ref": "StateMachine21CE8E3CE"
        }
+      },
+      {
+       "Action": [
+        "states:DescribeExecution",
+        "states:DescribeStateMachineForExecution",
+        "states:GetExecutionHistory"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::Select": [
+            6,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "StateMachine21CE8E3CE"
+              }
+             ]
+            }
+           ]
+          },
+          ":*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "states:DescribeActivity",
+        "states:DescribeStateMachine",
+        "states:ListActivities"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"

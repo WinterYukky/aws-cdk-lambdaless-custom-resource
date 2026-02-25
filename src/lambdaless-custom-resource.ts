@@ -20,9 +20,44 @@ import {
 } from 'aws-cdk-lib/aws-stepfunctions';
 import {
   CallAwsService,
+  CallAwsServiceProps,
   HttpInvoke,
 } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
+
+const DENY_CONDITION: Record<string, iam.Condition> = {
+  StringEquals: { 'aws:RequestedRegion': 'DISABLED' },
+};
+
+/**
+ * CallAwsService that supports adding IAM conditions to auto-generated policies.
+ * Use with impossible conditions to disable auto-generated policies when
+ * actual permissions are granted separately (e.g. via grantStartExecution).
+ */
+class ConditionalCallAwsService extends CallAwsService {
+  public static jsonata(
+    scope: Construct,
+    id: string,
+    props: CallAwsServiceProps & {
+      iamConditions?: Record<string, iam.Condition>;
+    },
+  ) {
+    return new ConditionalCallAwsService(scope, id, {
+      ...props,
+      queryLanguage: QueryLanguage.JSONATA,
+    });
+  }
+  constructor(
+    scope: Construct,
+    id: string,
+    props: CallAwsServiceProps & {
+      iamConditions?: Record<string, iam.Condition>;
+    },
+  ) {
+    super(scope, id, props);
+    this.taskPolicies![0].addConditions(props.iamConditions ?? {});
+  }
+}
 
 interface LambdalessProviderProps {
   // readonly workflow: IChainable;
@@ -120,34 +155,40 @@ class LambdalessProvider extends Construct {
     const stillRunning = Wait.jsonata(this, 'Still Running', {
       time: WaitTime.duration(cdk.Duration.seconds(1)),
     });
-    const startExecution = CallAwsService.jsonata(this, 'Start Execution', {
-      action: 'startExecution',
-      service: 'sfn',
-      iamResources: ['*'],
-      iamAction: 'states:startExecution',
-      parameters: {
-        Name: '{% $RequestId %}',
-        Input: {
-          RequestType: `{% $RequestType %}`,
-          StackId: `{% $StackId %}`,
-          RequestId: `{% $RequestId %}`,
-          ResourceType: `{% $ResourceType %}`,
-          LogicalResourceId: `{% $LogicalResourceId %}`,
-          PhysicalResourceId: `{% $PhysicalResourceId %}`,
-          ResourceProperties: `{% $ResourceProperties %}`,
-          OldResourceProperties: `{% $OldResourceProperties %}`,
+    const startExecution = ConditionalCallAwsService.jsonata(
+      this,
+      'Start Execution',
+      {
+        action: 'startExecution',
+        service: 'sfn',
+        iamResources: ['*'],
+        iamAction: 'states:startExecution',
+        iamConditions: DENY_CONDITION,
+        parameters: {
+          Name: '{% $RequestId %}',
+          Input: {
+            RequestType: `{% $RequestType %}`,
+            StackId: `{% $StackId %}`,
+            RequestId: `{% $RequestId %}`,
+            ResourceType: `{% $ResourceType %}`,
+            LogicalResourceId: `{% $LogicalResourceId %}`,
+            PhysicalResourceId: `{% $PhysicalResourceId %}`,
+            ResourceProperties: `{% $ResourceProperties %}`,
+            OldResourceProperties: `{% $OldResourceProperties %}`,
+          },
+          StateMachineArn: '{% $ResourceProperties.stateMachineArn %}',
         },
-        StateMachineArn: '{% $ResourceProperties.stateMachineArn %}',
       },
-    }).next(stillRunning);
+    ).next(stillRunning);
 
-    const describeExecution = CallAwsService.jsonata(
+    const describeExecution = ConditionalCallAwsService.jsonata(
       this,
       'Describe Execution',
       {
         action: 'describeExecution',
         service: 'sfn',
         iamResources: ['*'],
+        iamConditions: DENY_CONDITION,
         parameters: {
           ExecutionArn: '{% $ExecutionArn %}',
           IncludedData: 'ALL_DATA',
@@ -325,6 +366,7 @@ export class LambdalessCustomResource extends Construct {
     });
     const policy = new iam.Policy(this, 'Policy');
     props.stateMachine.grantStartExecution(policy);
+    props.stateMachine.grantRead(policy);
     framework.stateMachine.role.attachInlinePolicy(policy);
     this.resource.node.addDependency(policy);
     this.ref = this.resource.ref;
