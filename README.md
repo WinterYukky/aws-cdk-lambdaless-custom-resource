@@ -81,9 +81,13 @@ new cdk.CfnOutput(this, 'Message', {
 
 - [Restrict default VPC security group](./test/integ.restrict-default-security-group.ts) - Revoke/authorize default security group rules using Step Functions
 
-## Input
+## State Machine Requirements
 
-Your workflow receives the following input via `$states.input` (or as variables when using `CustomResourceFlow`):
+The state machine you pass to `LambdalessCustomResource` is invoked by the internal orchestrator whenever CloudFormation sends a Create, Update, or Delete event. You can use `CustomResourceFlow` to route these events, or build your own state machine from scratch.
+
+### Input
+
+Your state machine receives the following input. When using `CustomResourceFlow`, these are also available as variables (e.g. `$RequestType`).
 
 | Variable | Description |
 |---|---|
@@ -95,9 +99,9 @@ Your workflow receives the following input via `$states.input` (or as variables 
 | `$StackId` | CloudFormation stack ID |
 | `$RequestId` | Unique request ID |
 
-## Output
+### Output
 
-Your workflow should return:
+Your state machine must return a JSON object. The orchestrator uses this to respond to CloudFormation on your behalf.
 
 ```json
 {
