@@ -69,6 +69,6 @@ const project = new awscdk.AwsCdkConstructLibrary({
       experimentalDecorators: true,
     },
   },
-  npmProvenance: true,
+  npmTrustedPublishing: true,
 });
 project.synth();
