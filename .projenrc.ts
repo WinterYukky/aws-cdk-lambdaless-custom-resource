@@ -1,4 +1,4 @@
-import { awscdk } from 'projen';
+import { awscdk, github } from 'projen';
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'WinterYukky',
   authorAddress: '49480575+WinterYukky@users.noreply.github.com',
@@ -31,6 +31,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     'AWS CDK construct library for creating CloudFormation custom resources without Lambda functions, using Step Functions instead',
   devDeps: ['@aws-cdk/integ-tests-alpha'],
   githubOptions: {
+    projenCredentials: github.GithubCredentials.fromApp(),
     pullRequestLintOptions: {
       semanticTitleOptions: {
         types: [
@@ -59,6 +60,10 @@ const project = new awscdk.AwsCdkConstructLibrary({
     },
   },
   experimentalIntegRunner: true,
+  autoApproveOptions: {
+    allowedUsernames: ['github-actions[bot]'],
+    label: 'auto-upgrade',
+  },
   tsconfig: {
     compilerOptions: {
       experimentalDecorators: true,
