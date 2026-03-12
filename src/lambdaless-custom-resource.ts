@@ -10,7 +10,9 @@ import {
   Condition,
   DefinitionBody,
   IStateMachine,
+  Map,
   Pass,
+  ProvideItems,
   QueryLanguage,
   StateMachine,
   StateMachineType,
@@ -242,31 +244,37 @@ class LambdalessProvider extends Construct {
         "{% $ResponseURL ~> $substringAfter('?') ~> $split('&') ~> $map(function($v) {( $kv := $split($v, '='); {$kv[0]: $decodeUrlComponent($kv[1])} )}) ~> $merge %}",
       ),
     });
-    // Signal WaitCondition URL with user SM output Data (if waitConditionCallbackURL is present)
-    const signalWaitCondition = HttpInvoke.jsonata(
+    // Signal WaitCondition URL with each key in the user SM output Data
+    const signalOneKey = HttpInvoke.jsonata(this, 'Signal One Key', {
+      apiRoot: `{% $match($states.input.url, /(https://[^/]+)\\/(.*)\\?/).groups[0] %}`,
+      apiEndpoint: TaskInput.fromText(
+        `{% $match($states.input.url, /(https://[^/]+)\\/(.*)\\?/).groups[1] ~> $decodeUrlComponent() %}`,
+      ),
+      method: TaskInput.fromText('PUT'),
+      headers: TaskInput.fromObject({
+        'Content-Type': [''],
+      }),
+      connection,
+      body: TaskInput.fromObject({
+        Status: 'SUCCESS',
+        UniqueId: '{% $states.input.key %}',
+        Reason: 'Complete',
+        Data: '{% $string($states.input.value) %}',
+      }),
+      queryStringParameters: TaskInput.fromText(
+        "{% $states.input.url ~> $substringAfter('?') ~> $split('&') ~> $map(function($v) {( $kv := $split($v, '='); {$kv[0]: $decodeUrlComponent($kv[1])} )}) ~> $merge %}",
+      ),
+    });
+
+    const signalWaitCondition = Map.jsonata(
       this,
       'Signal WaitCondition',
       {
-        apiRoot: `{% $match($WaitConditionCallbackURL, /(https://[^/]+)\\/(.*)\\?/).groups[0] %}`,
-        apiEndpoint: TaskInput.fromText(
-          `{% $match($WaitConditionCallbackURL, /(https://[^/]+)\\/(.*)\\?/).groups[1] ~> $decodeUrlComponent() %}`,
-        ),
-        method: TaskInput.fromText('PUT'),
-        headers: TaskInput.fromObject({
-          'Content-Type': [''],
-        }),
-        connection,
-        body: TaskInput.fromObject({
-          Status: 'SUCCESS',
-          UniqueId: '{% $RequestId %}',
-          Reason: 'Complete',
-          Data: "{% $exists($states.input.Data) ? $string($states.input.Data) : '' %}",
-        }),
-        queryStringParameters: TaskInput.fromText(
-          "{% $WaitConditionCallbackURL ~> $substringAfter('?') ~> $split('&') ~> $map(function($v) {( $kv := $split($v, '='); {$kv[0]: $decodeUrlComponent($kv[1])} )}) ~> $merge %}",
+        items: ProvideItems.jsonata(
+          "{% $exists($states.input.Data) ? [$each($states.input.Data, function($v, $k) { {'key': $k, 'value': $v, 'url': $WaitConditionCallbackURL} })] : [{'key': $RequestId, 'value': '', 'url': $WaitConditionCallbackURL}] %}",
         ),
       },
-    );
+    ).itemProcessor(signalOneKey);
     signalWaitCondition.next(cfnResponse);
 
     // Branch: if WaitConditionCallbackURL is present, signal it first; otherwise go straight to CFN response

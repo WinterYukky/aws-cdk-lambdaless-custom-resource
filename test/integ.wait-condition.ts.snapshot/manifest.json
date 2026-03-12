@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cf91e0f70fd247ce3e6474245d1a39bc89d07691e67eeff19868ad74cd07dbc5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7ff0e5d4790f155bf3e3c08c8afdbac0861ea6f9bac06f9cf7fe227b76c10add.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -608,16 +608,10 @@
             "data": "LambdalessProviderPipeE285A459"
           }
         ],
-        "/WaitConditionIntegTest/WaitConditionData": [
+        "/WaitConditionIntegTest/S3Prefix": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WaitConditionData"
-          }
-        ],
-        "/WaitConditionIntegTest/WaitConditionRawData": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WaitConditionRawData"
+            "data": "S3Prefix"
           }
         ],
         "/WaitConditionIntegTest/BootstrapVersion": [
@@ -630,6 +624,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "LambdalessProviderLogGroup3404D3B2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdalessProviderLogGroup3404D3B2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -652,7 +655,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7c0321d16f0a920a75d9a3f816a58eafc8d1bbaa4c6207773c15505cc39233bf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f731bfb5b9ae01680bd1bd5f534994bf86cbe4cc6d08eb96ebc065e4f0982fc6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

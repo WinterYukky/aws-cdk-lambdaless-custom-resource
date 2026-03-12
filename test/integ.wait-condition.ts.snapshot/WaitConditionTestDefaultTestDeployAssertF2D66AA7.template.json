@@ -11,7 +11,7 @@
     },
     "service": "CloudFormation",
     "api": "describeStacks",
-    "expected": "{\"$StringLike\":\"s3Prefix\"}",
+    "expected": "{\"$StringLike\":\"s3://my-bucket/path/to/artifact\"}",
     "actualPath": "Stacks.0.Outputs.0.OutputValue",
     "parameters": {
      "StackName": "\"WaitConditionIntegTest\""
@@ -20,7 +20,7 @@
     "outputPaths": [
      "Stacks.0.Outputs.0.OutputValue"
     ],
-    "salt": "1773316535964"
+    "salt": "1773332464049"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
