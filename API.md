@@ -426,33 +426,6 @@ public readonly ref: string;
 
 ### LambdalessWaitCondition <a name="LambdalessWaitCondition" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition"></a>
 
-A lambdaless custom resource that integrates with CloudFormation WaitCondition for long-running async operations.
-
-This construct creates:
-1. A `CfnWaitConditionHandle` for the callback URL
-2. A `LambdalessCustomResource` that triggers the user-defined state machine
-3. A `CfnWaitCondition` that waits for the async operation to complete
-
-The state machine receives the `waitConditionCallbackURL` in its input,
-and must send a PUT request to it when the operation is done.
-
-*Example*
-
-```typescript
-const waitCondition = new LambdalessWaitCondition(this, 'CompileJob', {
-  stateMachine,
-  timeout: Duration.hours(12),
-  properties: {
-    jobDefinitionArn: jobDefinition.jobDefinitionArn,
-    jobQueueArn: jobQueue.jobQueueArn,
-  },
-});
-
-// Get the data returned by the callback
-const result = waitCondition.getDataById('my-job-id');
-```
-
-
 #### Initializers <a name="Initializers" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.Initializer"></a>
 
 ```typescript
@@ -493,7 +466,7 @@ new LambdalessWaitCondition(scope: Construct, id: string, props: LambdalessWaitC
 | --- | --- |
 | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.toString">toString</a></code> | Returns a string representation of this construct. |
 | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.with">with</a></code> | Applies one or more mixins to this construct. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getDataById">getDataById</a></code> | Extract the data value from the WaitCondition signal by UniqueId. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getDataById">getDataById</a></code> | *No description.* |
 
 ---
 
@@ -532,20 +505,9 @@ The mixins to apply.
 public getDataById(uniqueId: string): string
 ```
 
-Extract the data value from the WaitCondition signal by UniqueId.
-
-The WaitCondition's attrData has the format `{"UniqueId":"DataValue"}`
-for a single signal, or `{"Id1":"Data1","Id2":"Data2"}` for multiple signals.
-This method extracts the DataValue by removing the known prefix and suffix
-using CloudFormation intrinsic functions.
-
 ###### `uniqueId`<sup>Required</sup> <a name="uniqueId" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getDataById.parameter.uniqueId"></a>
 
 - *Type:* string
-
-The UniqueId used when signaling the WaitCondition.
-
-This must match the `uniqueId` passed to `WaitConditionCallback`.
 
 ---
 
@@ -594,7 +556,7 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.property.attrData">attrData</a></code> | <code>string</code> | The underlying CfnWaitCondition's raw attrData. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.property.attrData">attrData</a></code> | <code>string</code> | *No description.* |
 
 ---
 
@@ -617,270 +579,6 @@ public readonly attrData: string;
 ```
 
 - *Type:* string
-
-The underlying CfnWaitCondition's raw attrData.
-
-The format is a JSON string like `{"UniqueId":"DataValue"}`.
-Use `getDataById` for convenient access to the data value.
-
----
-
-
-### WaitConditionCallback <a name="WaitConditionCallback" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback"></a>
-
-A Step Functions fragment that sends a SUCCESS callback to a CloudFormation WaitCondition.
-
-Use this at the end of your state machine workflow (inside a `CustomResourceFlow`'s `onCreate`)
-to signal completion of a long-running async operation.
-
-The callback URL is read from `$ResourceProperties.waitConditionCallbackURL`,
-which is automatically set by `LambdalessWaitCondition`.
-
-*Example*
-
-```typescript
-const submitJob = CallAwsService.jsonata(this, 'SubmitJob', { ... });
-const pollJob = // ... polling logic ...
-const callback = new WaitConditionCallback(this, 'Callback', {
-  uniqueId: '{% $jobId %}',
-  data: '{% $artifactS3Prefix %}',
-});
-
-// Chain: submit -> poll -> callback
-submitJob.next(pollJob).next(callback);
-```
-
-
-#### Initializers <a name="Initializers" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.Initializer"></a>
-
-```typescript
-import { WaitConditionCallback } from 'aws-cdk-lambdaless-custom-resource'
-
-new WaitConditionCallback(scope: Construct, id: string, props: WaitConditionCallbackProps)
-```
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.Initializer.parameter.id">id</a></code> | <code>string</code> | Descriptive identifier for this chainable. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.Initializer.parameter.props">props</a></code> | <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallbackProps">WaitConditionCallbackProps</a></code> | *No description.* |
-
----
-
-##### `scope`<sup>Required</sup> <a name="scope" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.Initializer.parameter.scope"></a>
-
-- *Type:* constructs.Construct
-
----
-
-##### `id`<sup>Required</sup> <a name="id" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.Initializer.parameter.id"></a>
-
-- *Type:* string
-
-Descriptive identifier for this chainable.
-
----
-
-##### `props`<sup>Required</sup> <a name="props" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.Initializer.parameter.props"></a>
-
-- *Type:* <a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallbackProps">WaitConditionCallbackProps</a>
-
----
-
-#### Methods <a name="Methods" id="Methods"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.toString">toString</a></code> | Returns a string representation of this construct. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.with">with</a></code> | Applies one or more mixins to this construct. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.next">next</a></code> | Continue normal execution with the given state. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.prefixStates">prefixStates</a></code> | Prefix the IDs of all states in this state machine fragment. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.toSingleState">toSingleState</a></code> | Wrap all states in this state machine fragment up into a single state. |
-
----
-
-##### `toString` <a name="toString" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.toString"></a>
-
-```typescript
-public toString(): string
-```
-
-Returns a string representation of this construct.
-
-##### `with` <a name="with" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.with"></a>
-
-```typescript
-public with(mixins: ...IMixin[]): IConstruct
-```
-
-Applies one or more mixins to this construct.
-
-Mixins are applied in order. The list of constructs is captured at the
-start of the call, so constructs added by a mixin will not be visited.
-Use multiple `with()` calls if subsequent mixins should apply to added
-constructs.
-
-###### `mixins`<sup>Required</sup> <a name="mixins" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.with.parameter.mixins"></a>
-
-- *Type:* ...constructs.IMixin[]
-
-The mixins to apply.
-
----
-
-##### `next` <a name="next" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.next"></a>
-
-```typescript
-public next(next: IChainable): Chain
-```
-
-Continue normal execution with the given state.
-
-###### `next`<sup>Required</sup> <a name="next" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.next.parameter.next"></a>
-
-- *Type:* aws-cdk-lib.aws_stepfunctions.IChainable
-
----
-
-##### `prefixStates` <a name="prefixStates" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.prefixStates"></a>
-
-```typescript
-public prefixStates(prefix?: string): StateMachineFragment
-```
-
-Prefix the IDs of all states in this state machine fragment.
-
-Use this to avoid multiple copies of the state machine all having the
-same state IDs.
-
-###### `prefix`<sup>Optional</sup> <a name="prefix" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.prefixStates.parameter.prefix"></a>
-
-- *Type:* string
-
-The prefix to add.
-
-Will use construct ID by default.
-
----
-
-##### `toSingleState` <a name="toSingleState" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.toSingleState"></a>
-
-```typescript
-public toSingleState(options?: SingleStateOptions): Parallel
-```
-
-Wrap all states in this state machine fragment up into a single state.
-
-This can be used to add retry or error handling onto this state
-machine fragment.
-
-Be aware that this changes the result of the inner state machine
-to be an array with the result of the state machine in it. Adjust
-your paths accordingly. For example, change 'outputPath' to
-'$[0]'.
-
-###### `options`<sup>Optional</sup> <a name="options" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.toSingleState.parameter.options"></a>
-
-- *Type:* aws-cdk-lib.aws_stepfunctions.SingleStateOptions
-
----
-
-#### Static Functions <a name="Static Functions" id="Static Functions"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
-
----
-
-##### `isConstruct` <a name="isConstruct" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.isConstruct"></a>
-
-```typescript
-import { WaitConditionCallback } from 'aws-cdk-lambdaless-custom-resource'
-
-WaitConditionCallback.isConstruct(x: any)
-```
-
-Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
-
-###### `x`<sup>Required</sup> <a name="x" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.isConstruct.parameter.x"></a>
-
-- *Type:* any
-
-Any object.
-
----
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.property.endStates">endStates</a></code> | <code>aws-cdk-lib.aws_stepfunctions.INextable[]</code> | The states to chain onto if this fragment is used. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.property.id">id</a></code> | <code>string</code> | Descriptive identifier for this chainable. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallback.property.startState">startState</a></code> | <code>aws-cdk-lib.aws_stepfunctions.State</code> | The start state of this state machine fragment. |
-
----
-
-##### `node`<sup>Required</sup> <a name="node" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.property.node"></a>
-
-```typescript
-public readonly node: Node;
-```
-
-- *Type:* constructs.Node
-
-The tree node.
-
----
-
-##### `endStates`<sup>Required</sup> <a name="endStates" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.property.endStates"></a>
-
-```typescript
-public readonly endStates: INextable[];
-```
-
-- *Type:* aws-cdk-lib.aws_stepfunctions.INextable[]
-
-The states to chain onto if this fragment is used.
-
----
-
-##### `id`<sup>Required</sup> <a name="id" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.property.id"></a>
-
-```typescript
-public readonly id: string;
-```
-
-- *Type:* string
-
-Descriptive identifier for this chainable.
-
----
-
-##### `startState`<sup>Required</sup> <a name="startState" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallback.property.startState"></a>
-
-```typescript
-public readonly startState: State;
-```
-
-- *Type:* aws-cdk-lib.aws_stepfunctions.State
-
-The start state of this state machine fragment.
 
 ---
 
@@ -1088,8 +786,6 @@ new CustomResource(stack, 'MyCustomResource', {
 
 ### LambdalessWaitConditionProps <a name="LambdalessWaitConditionProps" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps"></a>
 
-Properties for LambdalessWaitCondition.
-
 #### Initializer <a name="Initializer" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.Initializer"></a>
 
 ```typescript
@@ -1102,12 +798,12 @@ const lambdalessWaitConditionProps: LambdalessWaitConditionProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.stateMachine">stateMachine</a></code> | <code>aws-cdk-lib.aws_stepfunctions.IStateMachine</code> | The state machine to execute for this custom resource. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.count">count</a></code> | <code>number</code> | The number of success signals that CloudFormation must receive before it sets the wait condition's status to CREATE_COMPLETE. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.properties">properties</a></code> | <code>{[ key: string ]: any}</code> | Properties to pass to the custom resource. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | The policy to apply when this resource is removed from the application. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.resourceType">resourceType</a></code> | <code>string</code> | For custom resources, you can specify AWS::CloudFormation::CustomResource (the default) as the resource type, or you can specify your own resource type name. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.timeout">timeout</a></code> | <code>aws-cdk-lib.Duration</code> | The maximum time to wait for the async operation to complete. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.stateMachine">stateMachine</a></code> | <code>aws-cdk-lib.aws_stepfunctions.IStateMachine</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.count">count</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.properties">properties</a></code> | <code>{[ key: string ]: any}</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.resourceType">resourceType</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.timeout">timeout</a></code> | <code>aws-cdk-lib.Duration</code> | *No description.* |
 
 ---
 
@@ -1119,19 +815,6 @@ public readonly stateMachine: IStateMachine;
 
 - *Type:* aws-cdk-lib.aws_stepfunctions.IStateMachine
 
-The state machine to execute for this custom resource.
-
-The state machine receives `waitConditionCallbackURL` in `ResourceProperties`.
-It must send a PUT request to this URL when the async operation completes.
-
-The PUT body must be JSON with:
-- `Status`: `"SUCCESS"` or `"FAILURE"`
-- `UniqueId`: A unique identifier string
-- `Reason`: Optional reason string
-- `Data`: Optional data string to return
-
-You can use `WaitConditionCallback` fragment to simplify this.
-
 ---
 
 ##### `count`<sup>Optional</sup> <a name="count" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.count"></a>
@@ -1141,9 +824,7 @@ public readonly count: number;
 ```
 
 - *Type:* number
-- *Default:* 1
-
-The number of success signals that CloudFormation must receive before it sets the wait condition's status to CREATE_COMPLETE.
+- *Default:* automatically determined by getDataById calls
 
 ---
 
@@ -1154,12 +835,6 @@ public readonly properties: {[ key: string ]: any};
 ```
 
 - *Type:* {[ key: string ]: any}
-- *Default:* No additional properties.
-
-Properties to pass to the custom resource.
-
-These are available in the state machine as `$states.input.ResourceProperties.*`.
-The `waitConditionCallbackURL` property is automatically added.
 
 ---
 
@@ -1170,9 +845,6 @@ public readonly removalPolicy: RemovalPolicy;
 ```
 
 - *Type:* aws-cdk-lib.RemovalPolicy
-- *Default:* cdk.RemovalPolicy.Destroy
-
-The policy to apply when this resource is removed from the application.
 
 ---
 
@@ -1183,9 +855,6 @@ public readonly resourceType: string;
 ```
 
 - *Type:* string
-- *Default:* AWS::CloudFormation::CustomResource
-
-For custom resources, you can specify AWS::CloudFormation::CustomResource (the default) as the resource type, or you can specify your own resource type name.
 
 ---
 
@@ -1197,77 +866,6 @@ public readonly timeout: Duration;
 
 - *Type:* aws-cdk-lib.Duration
 - *Default:* Duration.hours(12)
-
-The maximum time to wait for the async operation to complete.
-
----
-
-### WaitConditionCallbackProps <a name="WaitConditionCallbackProps" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallbackProps"></a>
-
-Properties for WaitConditionCallback.
-
-#### Initializer <a name="Initializer" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallbackProps.Initializer"></a>
-
-```typescript
-import { WaitConditionCallbackProps } from 'aws-cdk-lambdaless-custom-resource'
-
-const waitConditionCallbackProps: WaitConditionCallbackProps = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallbackProps.property.uniqueId">uniqueId</a></code> | <code>string</code> | A JSONata expression that evaluates to a unique identifier for the callback signal. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallbackProps.property.data">data</a></code> | <code>string</code> | A JSONata expression that evaluates to the data string to return through the WaitCondition. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.WaitConditionCallbackProps.property.reason">reason</a></code> | <code>string</code> | A JSONata expression that evaluates to a reason string. |
-
----
-
-##### `uniqueId`<sup>Required</sup> <a name="uniqueId" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallbackProps.property.uniqueId"></a>
-
-```typescript
-public readonly uniqueId: string;
-```
-
-- *Type:* string
-
-A JSONata expression that evaluates to a unique identifier for the callback signal.
-
----
-
-*Example*
-
-```typescript
-'{% $jobId %}'
-```
-
-
-##### `data`<sup>Optional</sup> <a name="data" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallbackProps.property.data"></a>
-
-```typescript
-public readonly data: string;
-```
-
-- *Type:* string
-- *Default:* No data returned.
-
-A JSONata expression that evaluates to the data string to return through the WaitCondition.
-
-This value will be accessible via `LambdalessWaitCondition.data`.
-
----
-
-##### `reason`<sup>Optional</sup> <a name="reason" id="aws-cdk-lambdaless-custom-resource.WaitConditionCallbackProps.property.reason"></a>
-
-```typescript
-public readonly reason: string;
-```
-
-- *Type:* string
-- *Default:* 'Complete'
-
-A JSONata expression that evaluates to a reason string.
 
 ---
 

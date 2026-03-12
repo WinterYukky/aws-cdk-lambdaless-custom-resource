@@ -1,6 +1,10 @@
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { DefinitionBody, Pass, StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
+import {
+  DefinitionBody,
+  Pass,
+  StateMachine,
+} from 'aws-cdk-lib/aws-stepfunctions';
 import { CustomResourceFlow, LambdalessWaitCondition } from '../src';
 
 const app = new cdk.App();
@@ -36,9 +40,13 @@ const integ = new IntegTest(app, 'WaitConditionTest', {
   testCases: [stack],
 });
 
-const describe = integ.assertions.awsApiCall('CloudFormation', 'describeStacks', {
-  StackName: stack.stackName,
-});
+const describe = integ.assertions.awsApiCall(
+  'CloudFormation',
+  'describeStacks',
+  {
+    StackName: stack.stackName,
+  },
+);
 describe.assertAtPath(
   'Stacks.0.Outputs.0.OutputValue',
   ExpectedResult.stringLikeRegexp('s3://my-bucket/path/to/artifact'),

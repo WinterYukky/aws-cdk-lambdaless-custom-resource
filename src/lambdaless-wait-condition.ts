@@ -23,7 +23,11 @@ export class LambdalessWaitCondition extends Construct {
   private readonly uniqueIds = new Set<string>();
   private readonly explicitCount?: number;
 
-  constructor(scope: Construct, id: string, props: LambdalessWaitConditionProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: LambdalessWaitConditionProps,
+  ) {
     super(scope, id);
     const timeout = props.timeout ?? cdk.Duration.hours(12);
     this.explicitCount = props.count;
@@ -37,7 +41,9 @@ export class LambdalessWaitCondition extends Construct {
     });
 
     const waitCondition = new cdk.CfnWaitCondition(this, 'WaitCondition', {
-      count: cdk.Lazy.number({ produce: () => this.explicitCount ?? (this.uniqueIds.size || 1) }),
+      count: cdk.Lazy.number({
+        produce: () => this.explicitCount ?? (this.uniqueIds.size || 1),
+      }),
       timeout: timeout.toSeconds().toString(),
       handle: handle.ref,
     });

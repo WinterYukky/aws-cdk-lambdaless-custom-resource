@@ -266,15 +266,11 @@ class LambdalessProvider extends Construct {
       ),
     });
 
-    const signalWaitCondition = Map.jsonata(
-      this,
-      'Signal WaitCondition',
-      {
-        items: ProvideItems.jsonata(
-          "{% $exists($states.input.Data) ? [$each($states.input.Data, function($v, $k) { {'key': $k, 'value': $v, 'url': $WaitConditionCallbackURL} })] : [{'key': $RequestId, 'value': '', 'url': $WaitConditionCallbackURL}] %}",
-        ),
-      },
-    ).itemProcessor(signalOneKey);
+    const signalWaitCondition = Map.jsonata(this, 'Signal WaitCondition', {
+      items: ProvideItems.jsonata(
+        "{% $exists($states.input.Data) ? [$each($states.input.Data, function($v, $k) { {'key': $k, 'value': $v, 'url': $WaitConditionCallbackURL} })] : [{'key': $RequestId, 'value': '', 'url': $WaitConditionCallbackURL}] %}",
+      ),
+    }).itemProcessor(signalOneKey);
     signalWaitCondition.next(cfnResponse);
 
     // Branch: if WaitConditionCallbackURL is present, signal it first; otherwise go straight to CFN response
