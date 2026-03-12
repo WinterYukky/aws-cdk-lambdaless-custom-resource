@@ -3,23 +3,13 @@ import { IStateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 import { Construct } from 'constructs';
 import { LambdalessCustomResource } from './lambdaless-custom-resource';
 
-/**
- * Properties for LambdalessWaitCondition.
- */
 export interface LambdalessWaitConditionProps {
   /**
    * The state machine to execute for this custom resource.
    *
-   * The state machine receives `waitConditionCallbackURL` in `ResourceProperties`.
-   * It must send a PUT request to this URL when the async operation completes.
-   *
-   * The PUT body must be JSON with:
-   * - `Status`: `"SUCCESS"` or `"FAILURE"`
-   * - `UniqueId`: A unique identifier string
-   * - `Reason`: Optional reason string
-   * - `Data`: Optional data string to return
-   *
-   * You can use `WaitConditionCallback` fragment to simplify this.
+   * The state machine output should follow the same format as `LambdalessCustomResource`:
+   * - `PhysicalResourceId`: Unique identifier for the resource
+   * - `Data`: Key-value pairs (JSON-stringified and sent as WaitCondition data)
    */
   readonly stateMachine: IStateMachine;
   /**
@@ -29,17 +19,7 @@ export interface LambdalessWaitConditionProps {
    */
   readonly timeout?: cdk.Duration;
   /**
-   * The number of success signals that CloudFormation must receive
-   * before it sets the wait condition's status to CREATE_COMPLETE.
-   *
-   * @default 1
-   */
-  readonly count?: number;
-  /**
    * Properties to pass to the custom resource.
-   *
-   * These are available in the state machine as `$states.input.ResourceProperties.*`.
-   * The `waitConditionCallbackURL` property is automatically added.
    *
    * @default - No additional properties.
    */
@@ -64,15 +44,11 @@ export interface LambdalessWaitConditionProps {
 
 /**
  * A lambdaless custom resource that integrates with CloudFormation WaitCondition
- * for long-running async operations.
+ * for long-running async operations (up to 12 hours).
  *
- * This construct creates:
- * 1. A `CfnWaitConditionHandle` for the callback URL
- * 2. A `LambdalessCustomResource` that triggers the user-defined state machine
- * 3. A `CfnWaitCondition` that waits for the async operation to complete
- *
- * The state machine receives the `waitConditionCallbackURL` in its input,
- * and must send a PUT request to it when the operation is done.
+ * Triggers the user-defined state machine via the shared `LambdalessProvider`,
+ * and additionally signals a CloudFormation WaitCondition when the state machine completes.
+ * The state machine's output `Data` is JSON-stringified and sent as the WaitCondition data.
  *
  * @example
  * const waitCondition = new LambdalessWaitCondition(this, 'CompileJob', {
@@ -80,19 +56,24 @@ export interface LambdalessWaitConditionProps {
  *   timeout: Duration.hours(12),
  *   properties: {
  *     jobDefinitionArn: jobDefinition.jobDefinitionArn,
- *     jobQueueArn: jobQueue.jobQueueArn,
  *   },
  * });
  *
- * // Get the data returned by the callback
- * const result = waitCondition.getDataById('my-job-id');
+ * const data = waitCondition.data; // JSON-stringified Data from the state machine
  */
 export class LambdalessWaitCondition extends Construct {
   /**
+   * The data returned by the WaitCondition signal.
+   *
+   * This is the JSON-stringified `Data` object from the state machine output.
+   * The format is `{"key":"value"}` which can be used to extract values.
+   */
+  readonly data: string;
+
+  /**
    * The underlying CfnWaitCondition's raw attrData.
    *
-   * The format is a JSON string like `{"UniqueId":"DataValue"}`.
-   * Use `getDataById` for convenient access to the data value.
+   * The format is `{"UniqueId":"DataValue"}`.
    */
   readonly attrData: string;
 
@@ -118,39 +99,19 @@ export class LambdalessWaitCondition extends Construct {
     });
 
     const waitCondition = new cdk.CfnWaitCondition(this, 'WaitCondition', {
-      count: props.count ?? 1,
+      count: 1,
       timeout: timeout.toSeconds().toString(),
       handle: handle.ref,
     });
     waitCondition.node.addDependency(customResource);
 
     this.attrData = waitCondition.attrData.toString();
-  }
-
-  /**
-   * Extract the data value from the WaitCondition signal by UniqueId.
-   *
-   * The WaitCondition's attrData has the format `{"UniqueId":"DataValue"}`
-   * for a single signal, or `{"Id1":"Data1","Id2":"Data2"}` for multiple signals.
-   * This method extracts the DataValue by removing the known prefix and suffix
-   * using CloudFormation intrinsic functions.
-   *
-   * @param uniqueId - The UniqueId used when signaling the WaitCondition.
-   *   This must match the `uniqueId` passed to `WaitConditionCallback`.
-   * @returns The data string sent in the WaitCondition signal.
-   */
-  getDataById(uniqueId: string): string {
-    const prefix = `"${uniqueId}":"`;
-    // Step 1: Split by '"uniqueId":"' and take the second part
-    // e.g. '{"id1":"data1","id2":"data2"}' → 'data1","id2":"data2"}'
-    const afterPrefix = cdk.Fn.select(1, cdk.Fn.split(prefix, this.attrData));
-    // Step 2: Split by '","' and take the first part (handles multi-signal)
-    // e.g. 'data1","id2":"data2"}' → 'data1'
-    // For the last entry: 'data2"}' → 'data2"}'
-    const beforeNextEntry = cdk.Fn.select(0, cdk.Fn.split('","', afterPrefix));
-    // Step 3: Remove trailing '"}' (only present for the last entry)
-    // e.g. 'data2"}' → 'data2'
-    // For non-last entries: 'data1' → 'data1' (no-op, '"}' not found)
-    return cdk.Fn.join('', cdk.Fn.split('"}', beforeNextEntry));
+    // attrData format: {"UniqueId":"DataValue"}
+    // Remove prefix up to first ":"  and trailing "}
+    const afterFirstColon = cdk.Fn.select(
+      1,
+      cdk.Fn.split('":"', this.attrData),
+    );
+    this.data = cdk.Fn.join('', cdk.Fn.split('"}', afterFirstColon));
   }
 }

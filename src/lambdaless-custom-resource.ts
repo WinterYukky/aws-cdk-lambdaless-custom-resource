@@ -155,6 +155,7 @@ class LambdalessProvider extends Construct {
         PhysicalResourceId: `{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}`,
         ResourceProperties: `{% $states.input.ResourceProperties %}`,
         OldResourceProperties: `{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}`,
+        WaitConditionCallbackURL: `{% $exists($states.input.ResourceProperties.waitConditionCallbackURL) ? $states.input.ResourceProperties.waitConditionCallbackURL : null %}`,
       },
     });
     const stillRunning = Wait.jsonata(this, 'Still Running', {
@@ -241,6 +242,41 @@ class LambdalessProvider extends Construct {
         "{% $ResponseURL ~> $substringAfter('?') ~> $split('&') ~> $map(function($v) {( $kv := $split($v, '='); {$kv[0]: $decodeUrlComponent($kv[1])} )}) ~> $merge %}",
       ),
     });
+    // Signal WaitCondition URL with user SM output Data (if waitConditionCallbackURL is present)
+    const signalWaitCondition = HttpInvoke.jsonata(
+      this,
+      'Signal WaitCondition',
+      {
+        apiRoot: `{% $match($WaitConditionCallbackURL, /(https://[^/]+)\\/(.*)\\?/).groups[0] %}`,
+        apiEndpoint: TaskInput.fromText(
+          `{% $match($WaitConditionCallbackURL, /(https://[^/]+)\\/(.*)\\?/).groups[1] ~> $decodeUrlComponent() %}`,
+        ),
+        method: TaskInput.fromText('PUT'),
+        headers: TaskInput.fromObject({
+          'Content-Type': [''],
+        }),
+        connection,
+        body: TaskInput.fromObject({
+          Status: 'SUCCESS',
+          UniqueId: '{% $RequestId %}',
+          Reason: 'Complete',
+          Data: "{% $exists($states.input.Data) ? $string($states.input.Data) : '' %}",
+        }),
+        queryStringParameters: TaskInput.fromText(
+          "{% $WaitConditionCallbackURL ~> $substringAfter('?') ~> $split('&') ~> $map(function($v) {( $kv := $split($v, '='); {$kv[0]: $decodeUrlComponent($kv[1])} )}) ~> $merge %}",
+        ),
+      },
+    );
+    signalWaitCondition.next(cfnResponse);
+
+    // Branch: if WaitConditionCallbackURL is present, signal it first; otherwise go straight to CFN response
+    const hasWaitCondition = Choice.jsonata(this, 'Has WaitCondition?')
+      .when(
+        Condition.jsonata('{% $WaitConditionCallbackURL != null %}'),
+        signalWaitCondition,
+      )
+      .otherwise(cfnResponse);
+
     stillRunning.next(describeExecution);
     const isFinished = Choice.jsonata(this, 'Is finished?')
       .when(
@@ -249,7 +285,7 @@ class LambdalessProvider extends Construct {
       )
       .when(
         Condition.jsonata("{% $states.input.Status = 'SUCCEEDED' %}"),
-        cfnResponse,
+        hasWaitCondition,
         {
           outputs: '{% $parse($states.input.Output) %}',
         },

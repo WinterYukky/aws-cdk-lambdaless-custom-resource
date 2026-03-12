@@ -5,25 +5,20 @@ import {
   Pass,
   StateMachine,
 } from 'aws-cdk-lib/aws-stepfunctions';
-import {
-  CustomResourceFlow,
-  LambdalessWaitCondition,
-  WaitConditionCallback,
-} from '../src';
+import { CustomResourceFlow, LambdalessWaitCondition } from '../src';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'WaitConditionIntegTest');
 
-const uniqueId = 'test-signal';
-
-// Simple flow: on Create, immediately callback with data containing special chars
-const callback = new WaitConditionCallback(stack, 'Callback', {
-  uniqueId: `{% "${uniqueId}" %}`,
-  data: '{% "s3://my-bucket/path/to/artifact" %}',
-});
-
 const flow = new CustomResourceFlow(stack, 'Flow', {
-  onCreate: callback,
+  onCreate: Pass.jsonata(stack, 'CreateWithData', {
+    outputs: {
+      PhysicalResourceId: '{% $RequestId %}',
+      Data: {
+        s3Prefix: 's3://my-bucket/path/to/artifact',
+      },
+    },
+  }),
   onDelete: Pass.jsonata(stack, 'DeleteNoOp', {
     outputs: {
       PhysicalResourceId: '{% $PhysicalResourceId %}',
@@ -42,7 +37,7 @@ const waitCondition = new LambdalessWaitCondition(stack, 'WaitCondition', {
 });
 
 new cdk.CfnOutput(stack, 'WaitConditionData', {
-  value: waitCondition.getDataById(uniqueId),
+  value: waitCondition.data,
 });
 
 new cdk.CfnOutput(stack, 'WaitConditionRawData', {
@@ -59,7 +54,8 @@ const describe = integ.assertions.awsApiCall(
   { StackName: stack.stackName },
 );
 
+// The data is JSON-stringified: {"s3Prefix":"s3://my-bucket/path/to/artifact"}
 describe.assertAtPath(
   'Stacks.0.Outputs.0.OutputValue',
-  ExpectedResult.stringLikeRegexp('s3://my-bucket/path/to/artifact'),
+  ExpectedResult.stringLikeRegexp('s3Prefix'),
 );
