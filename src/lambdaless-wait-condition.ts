@@ -143,17 +143,11 @@ export class LambdalessWaitCondition extends Construct {
     const prefix = `"${uniqueId}":"`;
     // Step 1: Split by '"uniqueId":"' and take the second part
     // e.g. '{"id1":"data1","id2":"data2"}' → 'data1","id2":"data2"}'
-    const afterPrefix = cdk.Fn.select(
-      1,
-      cdk.Fn.split(prefix, this.attrData),
-    );
+    const afterPrefix = cdk.Fn.select(1, cdk.Fn.split(prefix, this.attrData));
     // Step 2: Split by '","' and take the first part (handles multi-signal)
     // e.g. 'data1","id2":"data2"}' → 'data1'
     // For the last entry: 'data2"}' → 'data2"}'
-    const beforeNextEntry = cdk.Fn.select(
-      0,
-      cdk.Fn.split('","', afterPrefix),
-    );
+    const beforeNextEntry = cdk.Fn.select(0, cdk.Fn.split('","', afterPrefix));
     // Step 3: Remove trailing '"}' (only present for the last entry)
     // e.g. 'data2"}' → 'data2'
     // For non-last entries: 'data1' → 'data1' (no-op, '"}' not found)

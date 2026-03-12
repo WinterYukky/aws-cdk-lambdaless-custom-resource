@@ -534,7 +534,8 @@ public getDataById(uniqueId: string): string
 
 Extract the data value from the WaitCondition signal by UniqueId.
 
-The WaitCondition's attrData has the format `{"UniqueId":"DataValue"}`.
+The WaitCondition's attrData has the format `{"UniqueId":"DataValue"}`
+for a single signal, or `{"Id1":"Data1","Id2":"Data2"}` for multiple signals.
 This method extracts the DataValue by removing the known prefix and suffix
 using CloudFormation intrinsic functions.
 
@@ -1102,6 +1103,7 @@ const lambdalessWaitConditionProps: LambdalessWaitConditionProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.stateMachine">stateMachine</a></code> | <code>aws-cdk-lib.aws_stepfunctions.IStateMachine</code> | The state machine to execute for this custom resource. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.count">count</a></code> | <code>number</code> | The number of success signals that CloudFormation must receive before it sets the wait condition's status to CREATE_COMPLETE. |
 | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.properties">properties</a></code> | <code>{[ key: string ]: any}</code> | Properties to pass to the custom resource. |
 | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | The policy to apply when this resource is removed from the application. |
 | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.resourceType">resourceType</a></code> | <code>string</code> | For custom resources, you can specify AWS::CloudFormation::CustomResource (the default) as the resource type, or you can specify your own resource type name. |
@@ -1129,6 +1131,19 @@ The PUT body must be JSON with:
 - `Data`: Optional data string to return
 
 You can use `WaitConditionCallback` fragment to simplify this.
+
+---
+
+##### `count`<sup>Optional</sup> <a name="count" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.count"></a>
+
+```typescript
+public readonly count: number;
+```
+
+- *Type:* number
+- *Default:* 1
+
+The number of success signals that CloudFormation must receive before it sets the wait condition's status to CREATE_COMPLETE.
 
 ---
 
