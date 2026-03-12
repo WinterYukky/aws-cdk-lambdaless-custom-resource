@@ -29,6 +29,13 @@ export interface LambdalessWaitConditionProps {
    */
   readonly timeout?: cdk.Duration;
   /**
+   * The number of success signals that CloudFormation must receive
+   * before it sets the wait condition's status to CREATE_COMPLETE.
+   *
+   * @default 1
+   */
+  readonly count?: number;
+  /**
    * Properties to pass to the custom resource.
    *
    * These are available in the state machine as `$states.input.ResourceProperties.*`.
@@ -111,7 +118,7 @@ export class LambdalessWaitCondition extends Construct {
     });
 
     const waitCondition = new cdk.CfnWaitCondition(this, 'WaitCondition', {
-      count: 1,
+      count: props.count ?? 1,
       timeout: timeout.toSeconds().toString(),
       handle: handle.ref,
     });
@@ -123,7 +130,8 @@ export class LambdalessWaitCondition extends Construct {
   /**
    * Extract the data value from the WaitCondition signal by UniqueId.
    *
-   * The WaitCondition's attrData has the format `{"UniqueId":"DataValue"}`.
+   * The WaitCondition's attrData has the format `{"UniqueId":"DataValue"}`
+   * for a single signal, or `{"Id1":"Data1","Id2":"Data2"}` for multiple signals.
    * This method extracts the DataValue by removing the known prefix and suffix
    * using CloudFormation intrinsic functions.
    *
@@ -132,9 +140,23 @@ export class LambdalessWaitCondition extends Construct {
    * @returns The data string sent in the WaitCondition signal.
    */
   getDataById(uniqueId: string): string {
-    const prefix = `{"${uniqueId}":"`;
-    const suffix = '"}';
-    const withoutPrefix = cdk.Fn.select(1, cdk.Fn.split(prefix, this.attrData));
-    return cdk.Fn.join('', cdk.Fn.split(suffix, withoutPrefix));
+    const prefix = `"${uniqueId}":"`;
+    // Step 1: Split by '"uniqueId":"' and take the second part
+    // e.g. '{"id1":"data1","id2":"data2"}' → 'data1","id2":"data2"}'
+    const afterPrefix = cdk.Fn.select(
+      1,
+      cdk.Fn.split(prefix, this.attrData),
+    );
+    // Step 2: Split by '","' and take the first part (handles multi-signal)
+    // e.g. 'data1","id2":"data2"}' → 'data1'
+    // For the last entry: 'data2"}' → 'data2"}'
+    const beforeNextEntry = cdk.Fn.select(
+      0,
+      cdk.Fn.split('","', afterPrefix),
+    );
+    // Step 3: Remove trailing '"}' (only present for the last entry)
+    // e.g. 'data2"}' → 'data2'
+    // For non-last entries: 'data1' → 'data1' (no-op, '"}' not found)
+    return cdk.Fn.join('', cdk.Fn.split('"}', beforeNextEntry));
   }
 }

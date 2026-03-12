@@ -10,6 +10,9 @@
      }
     },
     "AuthorizationType": "API_KEY"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/WaitConditionCallbackConnection/Connection"
    }
   },
   "StateMachineRoleB840431D": {
@@ -27,6 +30,9 @@
      ],
      "Version": "2012-10-17"
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/StateMachine/Role/Resource"
    }
   },
   "StateMachineRoleDefaultPolicyDF1E6607": {
@@ -46,8 +52,8 @@
       },
       {
        "Action": [
-        "secretsmanager:DescribeSecret",
-        "secretsmanager:GetSecretValue"
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -76,6 +82,9 @@
       "Ref": "StateMachineRoleB840431D"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/StateMachine/Role/DefaultPolicy/Resource"
    }
   },
   "StateMachine2E01A3A5": {
@@ -85,7 +94,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"Callback\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"Update\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"DeleteNoOp\"}]},\"Callback\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Type\":\"Task\",\"Arguments\":{\"ApiEndpoint\":\"{% $match($ResourceProperties.waitConditionCallbackURL, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[0] & '/' & $match($ResourceProperties.waitConditionCallbackURL, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[1] ~> $decodeUrlComponent() %}\",\"Authentication\":{\"ConnectionArn\":\"",
+       "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"Callback\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"Update\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"DeleteNoOp\"}]},\"Callback\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Type\":\"Task\",\"Arguments\":{\"ApiEndpoint\":\"{% $match($ResourceProperties.waitConditionCallbackURL, /(https://[^/]+)\\\\\\\\/(.*)\\\\\\\\?/).groups[0] & '/' & $match($ResourceProperties.waitConditionCallbackURL, /(https://[^/]+)\\\\\\\\/(.*)\\\\\\\\?/).groups[1] ~> $decodeUrlComponent() %}\",\"Authentication\":{\"ConnectionArn\":\"",
        {
         "Fn::GetAtt": [
          "WaitConditionCallbackConnection27E21BDB",
@@ -112,10 +121,16 @@
     "StateMachineRoleB840431D"
    ],
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/StateMachine/Resource"
+   }
   },
   "WaitConditionHandle1CC3DD84": {
-   "Type": "AWS::CloudFormation::WaitConditionHandle"
+   "Type": "AWS::CloudFormation::WaitConditionHandle",
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/WaitCondition/Handle"
+   }
   },
   "WaitCondition1046E89E": {
    "Type": "Custom::WaitConditionTest",
@@ -223,7 +238,10 @@
     "WaitConditionPolicyD4185F63"
    ],
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/WaitCondition/Resource/Resource/Default"
+   }
   },
   "WaitConditionPolicyD4185F63": {
    "Type": "AWS::IAM::Policy",
@@ -231,10 +249,16 @@
     "PolicyDocument": {
      "Statement": [
       {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "StateMachine2E01A3A5"
+       }
+      },
+      {
        "Action": [
         "states:ListExecutions",
-        "states:ListStateMachines",
-        "states:StartExecution"
+        "states:ListStateMachines"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -285,9 +309,9 @@
       },
       {
        "Action": [
-        "states:DescribeActivity",
+        "states:ListActivities",
         "states:DescribeStateMachine",
-        "states:ListActivities"
+        "states:DescribeActivity"
        ],
        "Effect": "Allow",
        "Resource": "*"
@@ -301,6 +325,9 @@
       "Ref": "LambdalessProviderStateMachineRole4BDCD64E"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/WaitCondition/Resource/Policy/Resource"
    }
   },
   "WaitConditionE05DAE56": {
@@ -315,15 +342,24 @@
    "DependsOn": [
     "WaitConditionPolicyD4185F63",
     "WaitCondition1046E89E"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/WaitCondition/WaitCondition"
+   }
   },
   "LambdalessProviderTopic58DC2415": {
-   "Type": "AWS::SNS::Topic"
+   "Type": "AWS::SNS::Topic",
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/LambdalessProvider/Topic/Resource"
+   }
   },
   "LambdalessProviderQueue3E954037": {
    "Type": "AWS::SQS::Queue",
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/LambdalessProvider/Queue/Resource"
+   }
   },
   "LambdalessProviderQueuePolicy16C88515": {
    "Type": "AWS::SQS::QueuePolicy",
@@ -358,6 +394,9 @@
       "Ref": "LambdalessProviderQueue3E954037"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/LambdalessProvider/Queue/Policy/Resource"
    }
   },
   "LambdalessProviderQueueWaitConditionIntegTestLambdalessProviderTopic4BC6CBD6C675897E": {
@@ -379,7 +418,10 @@
     "LambdalessProviderPipeRoleDefaultPolicy918C6032",
     "LambdalessProviderPipeRoleD3BC051F",
     "LambdalessProviderQueuePolicy16C88515"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/LambdalessProvider/Queue/WaitConditionIntegTestLambdalessProviderTopic4BC6CBD6/Resource"
+   }
   },
   "LambdalessProviderConnection803AC994": {
    "Type": "AWS::Events::Connection",
@@ -391,6 +433,9 @@
      }
     },
     "AuthorizationType": "API_KEY"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/LambdalessProvider/Connection/Connection"
    }
   },
   "LambdalessProviderStateMachineRole4BDCD64E": {
@@ -408,6 +453,9 @@
      ],
      "Version": "2012-10-17"
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/LambdalessProvider/StateMachine/Role/Resource"
    }
   },
   "LambdalessProviderStateMachineRoleDefaultPolicy613E8B8C": {
@@ -416,10 +464,17 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "states:describeExecution",
-        "states:startExecution"
-       ],
+       "Action": "states:describeExecution",
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestedRegion": "DISABLED"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "states:startExecution",
        "Condition": {
         "StringEquals": {
          "aws:RequestedRegion": "DISABLED"
@@ -440,8 +495,8 @@
       },
       {
        "Action": [
-        "secretsmanager:DescribeSecret",
-        "secretsmanager:GetSecretValue"
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -470,6 +525,9 @@
       "Ref": "LambdalessProviderStateMachineRole4BDCD64E"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/LambdalessProvider/StateMachine/Role/DefaultPolicy/Resource"
    }
   },
   "LambdalessProviderStateMachine7D8C8128": {
@@ -515,7 +573,10 @@
     "LambdalessProviderStateMachineRole4BDCD64E"
    ],
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/LambdalessProvider/StateMachine/Resource"
+   }
   },
   "LambdalessProviderPipeRoleD3BC051F": {
    "Type": "AWS::IAM::Role",
@@ -532,6 +593,9 @@
      ],
      "Version": "2012-10-17"
     }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/LambdalessProvider/Pipe/Role/Resource"
    }
   },
   "LambdalessProviderPipeRoleDefaultPolicy918C6032": {
@@ -541,11 +605,11 @@
      "Statement": [
       {
        "Action": [
+        "sqs:ReceiveMessage",
         "sqs:ChangeMessageVisibility",
-        "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes",
         "sqs:GetQueueUrl",
-        "sqs:ReceiveMessage"
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -571,6 +635,9 @@
       "Ref": "LambdalessProviderPipeRoleD3BC051F"
      }
     ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/LambdalessProvider/Pipe/Role/DefaultPolicy/Resource"
    }
   },
   "LambdalessProviderPipeE285A459": {
@@ -607,7 +674,20 @@
    "DependsOn": [
     "LambdalessProviderPipeRoleDefaultPolicy918C6032",
     "LambdalessProviderPipeRoleD3BC051F"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/LambdalessProvider/Pipe/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WPwU7DMAyGn2V3L0C5cEWV0DggRofEccpSj3ltnVA7nVCVd0dphdZd4v+34892YYrHJ3O/shdZu7pZt3Qw406ta8BeZD+KYjhGdkqeZaoovll3IsaX3n53yApbKwLlyZNDWH6A8sg3/suSJrhB7tVKI2bcqIZXHnyDUNq2fb7IDvuBHCbAAVnFjKVnxqkrg68uAdnOjJVvp4lT3PqW3G+2s0ogef1PH8jl7Cx28SCup/DPXPoE8iNm/IgYJ+wspvcKX9gEgQKKySMpYMrlfG/puaYM3Fiu84ZR1HcVio+9mxde6JuOnHiPGqImYF+jOcvdUBSmKMzD6ixE6z6yUoemmuMfZBeWAM0BAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "WaitConditionIntegTest/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
   }
  },
  "Outputs": {
@@ -620,24 +700,14 @@
        "\"}",
        {
         "Fn::Select": [
-         0,
+         1,
          {
           "Fn::Split": [
-           "\",\"",
+           "{\"test-signal\":\"",
            {
-            "Fn::Select": [
-             1,
-             {
-              "Fn::Split": [
-               "\"test-signal\":\"",
-               {
-                "Fn::GetAtt": [
-                 "WaitConditionE05DAE56",
-                 "Data"
-                ]
-               }
-              ]
-             }
+            "Fn::GetAtt": [
+             "WaitConditionE05DAE56",
+             "Data"
             ]
            }
           ]
@@ -656,6 +726,272 @@
      "Data"
     ]
    }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
   }
  },
  "Parameters": {
