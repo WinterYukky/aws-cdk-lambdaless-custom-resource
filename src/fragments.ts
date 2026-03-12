@@ -138,11 +138,11 @@ export class WaitConditionCallback extends StateMachineFragment {
         ),
       });
 
-    const callbackUrl = '{% $ResourceProperties.waitConditionCallbackURL %}';
+    const callbackUrl = '$ResourceProperties.waitConditionCallbackURL';
     const callback = HttpInvoke.jsonata(this, 'Callback', {
-      apiRoot: `{% $match(${callbackUrl}, /(https:\\/\\/[^/]+)\\/(.*)\\?/).groups[0] %}`,
+      apiRoot: `{% $match(${callbackUrl}, /(https://[^/]+)\\/(.*)\\?/).groups[0] %}`,
       apiEndpoint: cdk.aws_stepfunctions.TaskInput.fromText(
-        `{% $match(${callbackUrl}, /(https:\\/\\/[^/]+)\\/(.*)\\?/).groups[1] ~> $decodeUrlComponent() %}`,
+        `{% $match(${callbackUrl}, /(https://[^/]+)\\/(.*)\\?/).groups[1] ~> $decodeUrlComponent() %}`,
       ),
       method: cdk.aws_stepfunctions.TaskInput.fromText('PUT'),
       headers: cdk.aws_stepfunctions.TaskInput.fromObject({
