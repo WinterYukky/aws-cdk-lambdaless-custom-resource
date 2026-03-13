@@ -128,7 +128,7 @@ customResource.getAttString('key1')  // Returns 'value1'
 
 For long-running async operations that exceed the Custom Resource's 1-hour timeout, use `LambdalessWaitCondition`. It integrates with CloudFormation WaitCondition to support operations up to 12 hours.
 
-Your state machine uses the same input/output format as `LambdalessCustomResource`. Each key in the output `Data` becomes a separate WaitCondition signal, and the `count` is automatically determined by how many `getAttString()` calls you make.
+Your state machine uses the same input/output format as `LambdalessCustomResource`. Each key in the output `Data` becomes a separate WaitCondition signal. Specify `count` to match the number of keys your state machine returns in `Data`.
 
 ```typescript
 import { LambdalessWaitCondition } from 'aws-cdk-lambdaless-custom-resource';
@@ -138,14 +138,14 @@ const waitCondition = new LambdalessWaitCondition(this, 'CompileJob', {
     definitionBody: DefinitionBody.fromChainable(flow),
   }),
   timeout: Duration.hours(12),
+  count: 1, // Number of keys in your state machine's output Data
   properties: {
     jobDefinitionArn: jobDefinition.jobDefinitionArn,
     jobQueueArn: jobQueue.jobQueueArn,
   },
 });
 
-// Extract data from WaitCondition signals
-// Each call registers the key, and count is set automatically
+// Access data from WaitCondition signals
 const s3Prefix = waitCondition.getAttString('s3Prefix');
 ```
 
@@ -160,7 +160,6 @@ graph LR
     Express -->|startExecution| Standard[Your State Machine]
     Express -->|describeExecution| Standard
     Express -->|HttpInvoke| CFn
-    Express -.->|HttpInvoke| WC[WaitCondition]
     Express -.->|timeout| Pipes
 ```
 

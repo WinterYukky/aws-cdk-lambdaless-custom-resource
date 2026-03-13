@@ -244,7 +244,7 @@ class LambdalessProvider extends Construct {
         "{% $ResponseURL ~> $substringAfter('?') ~> $split('&') ~> $map(function($v) {( $kv := $split($v, '='); {$kv[0]: $decodeUrlComponent($kv[1])} )}) ~> $merge %}",
       ),
     });
-    // Signal WaitCondition URL with each key in the user SM output Data
+    // Signal WaitCondition URL with each key in the state machine output Data
     const signalOneKey = HttpInvoke.jsonata(this, 'Signal One Key', {
       apiRoot: `{% $match($states.input.url, /(https://[^/]+)\\/(.*)\\?/).groups[0] %}`,
       apiEndpoint: TaskInput.fromText(
