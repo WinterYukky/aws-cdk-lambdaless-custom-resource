@@ -513,7 +513,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"Next\":\"Describe Execution\",\"Assign\":{\"ExecutionArn\":\"{% $replace($states.input.ResourceProperties.stateMachineArn, 'stateMachine', 'execution') & ':' & $states.input.RequestId %}\",\"RequestType\":\"{% $states.input.RequestType %}\",\"ResponseURL\":\"{% $states.input.ResponseURL %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Describe Execution\":{\"Next\":\"Is finished?\",\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"Start Execution\"}],\"Type\":\"Task\",\"Arguments\":{\"ExecutionArn\":\"{% $ExecutionArn %}\",\"IncludedData\":\"ALL_DATA\"},\"Resource\":\"arn:",
+       "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"Next\":\"Describe Execution\",\"Assign\":{\"ExecutionArn\":\"{% $replace($states.input.ResourceProperties.stateMachineArn, 'stateMachine', 'execution') & ':' & $states.input.RequestId %}\",\"RequestType\":\"{% $states.input.RequestType %}\",\"ResponseURL\":\"{% $states.input.ResponseURL %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\",\"WaitConditionCallbackURL\":\"{% $exists($states.input.ResourceProperties.waitConditionCallbackURL) ? $states.input.ResourceProperties.waitConditionCallbackURL : null %}\"}},\"Describe Execution\":{\"Next\":\"Is finished?\",\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"Start Execution\"}],\"Type\":\"Task\",\"Arguments\":{\"ExecutionArn\":\"{% $ExecutionArn %}\",\"IncludedData\":\"ALL_DATA\"},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -521,7 +521,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:sfn:startExecution\"},\"Is finished?\":{\"Type\":\"Choice\",\"Choices\":[{\"Condition\":\"{% $states.input.Status = 'RUNNING' %}\",\"Next\":\"Still Running\"},{\"Condition\":\"{% $states.input.Status = 'SUCCEEDED' %}\",\"Output\":\"{% $parse($states.input.Output) %}\",\"Next\":\"Response to CloudFormation\"}],\"Default\":\"Given workflow was failed\"},\"Given workflow was failed\":{\"Type\":\"Pass\",\"Output\":{\"Status\":\"FAILED\",\"Reason\":\"{% $states.input.Error & ': ' & $states.input.Cause %}\"},\"Next\":\"Response to CloudFormation\"},\"Response to CloudFormation\":{\"End\":true,\"Type\":\"Task\",\"Arguments\":{\"ApiEndpoint\":\"{% $match($ResponseURL, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[0] & '/' & $match($ResponseURL, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[1] ~> $decodeUrlComponent() %}\",\"Authentication\":{\"ConnectionArn\":\"",
+       ":states:::aws-sdk:sfn:startExecution\"},\"Is finished?\":{\"Type\":\"Choice\",\"Choices\":[{\"Condition\":\"{% $states.input.Status = 'RUNNING' %}\",\"Next\":\"Still Running\"},{\"Condition\":\"{% $states.input.Status = 'SUCCEEDED' %}\",\"Output\":\"{% $parse($states.input.Output) %}\",\"Next\":\"Has WaitCondition?\"}],\"Default\":\"Given workflow was failed\"},\"Given workflow was failed\":{\"Type\":\"Pass\",\"Output\":{\"Status\":\"FAILED\",\"Reason\":\"{% $states.input.Error & ': ' & $states.input.Cause %}\"},\"Next\":\"Response to CloudFormation\"},\"Response to CloudFormation\":{\"End\":true,\"Type\":\"Task\",\"Arguments\":{\"ApiEndpoint\":\"{% $match($ResponseURL, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[0] & '/' & $match($ResponseURL, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[1] ~> $decodeUrlComponent() %}\",\"Authentication\":{\"ConnectionArn\":\"",
        {
         "Fn::GetAtt": [
          "LambdalessProviderConnection803AC994",
@@ -532,7 +532,18 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::http:invoke\"}},\"QueryLanguage\":\"JSONata\"}"
+       ":states:::http:invoke\"},\"Signal WaitCondition\":{\"Type\":\"Map\",\"Next\":\"Response to CloudFormation\",\"Items\":\"{% $exists($states.input.Data) ? [$each($states.input.Data, function($v, $k) { {'key': $k, 'value': $v, 'url': $WaitConditionCallbackURL} })] : [{'key': $RequestId, 'value': '', 'url': $WaitConditionCallbackURL}] %}\",\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"INLINE\"},\"StartAt\":\"Signal One Key\",\"States\":{\"Signal One Key\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Type\":\"Task\",\"Arguments\":{\"ApiEndpoint\":\"{% $match($states.input.url, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[0] & '/' & $match($states.input.url, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[1] ~> $decodeUrlComponent() %}\",\"Authentication\":{\"ConnectionArn\":\"",
+       {
+        "Fn::GetAtt": [
+         "LambdalessProviderConnection803AC994",
+         "Arn"
+        ]
+       },
+       "\"},\"Method\":\"PUT\",\"Headers\":{\"Content-Type\":[\"\"]},\"RequestBody\":{\"Status\":\"SUCCESS\",\"UniqueId\":\"{% $states.input.key %}\",\"Reason\":\"Complete\",\"Data\":\"{% $string($states.input.value) %}\"},\"QueryParameters\":\"{% $states.input.url ~> $substringAfter('?') ~> $split('&') ~> $map(function($v) {( $kv := $split($v, '='); {$kv[0]: $decodeUrlComponent($kv[1])} )}) ~> $merge %}\"},\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::http:invoke\"}}}},\"Has WaitCondition?\":{\"Type\":\"Choice\",\"Choices\":[{\"Condition\":\"{% $WaitConditionCallbackURL != null %}\",\"Next\":\"Signal WaitCondition\"}],\"Default\":\"Response to CloudFormation\"}},\"QueryLanguage\":\"JSONata\"}"
       ]
      ]
     },

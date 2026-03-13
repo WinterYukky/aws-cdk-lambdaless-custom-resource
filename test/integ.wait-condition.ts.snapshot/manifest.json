@@ -1,28 +1,28 @@
 {
   "version": "53.0.0",
   "artifacts": {
-    "RestrictDefaultSecurityGroupIntegTest.assets": {
+    "WaitConditionIntegTest.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "RestrictDefaultSecurityGroupIntegTest.assets.json",
+        "file": "WaitConditionIntegTest.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "RestrictDefaultSecurityGroupIntegTest": {
+    "WaitConditionIntegTest": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "RestrictDefaultSecurityGroupIntegTest.template.json",
+        "templateFile": "WaitConditionIntegTest.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3fd054ba76bcf796808b742cc412b4f5370be1861c3a2d38ebef9f04472d45d4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7ff0e5d4790f155bf3e3c08c8afdbac0861ea6f9bac06f9cf7fe227b76c10add.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "RestrictDefaultSecurityGroupIntegTest.assets"
+          "WaitConditionIntegTest.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,297 +31,18 @@
         }
       },
       "dependencies": [
-        "RestrictDefaultSecurityGroupIntegTest.assets"
+        "WaitConditionIntegTest.assets"
       ],
       "metadata": {
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "natGateways": "*",
-              "restrictDefaultSecurityGroup": false
-            }
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpc8378EB38"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/PublicSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTable6C95E38E"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/PublicSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTable94F7E489"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2DefaultRoute97F91067"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/IsolatedSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/IsolatedSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcIsolatedSubnet1SubnetE48C5737"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/IsolatedSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/IsolatedSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/IsolatedSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/IsolatedSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcIsolatedSubnet2Subnet16364B91"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/IsolatedSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/IsolatedSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcIGWD7BA715C"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/Vpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcVPCGWBF912B6E"
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/RestrictDefaultSG/StateMachine": [
+        "/WaitConditionIntegTest/StateMachine": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "definitionBody": "*"
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
-            }
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/RestrictDefaultSG/StateMachine/Role": [
+        "/WaitConditionIntegTest/StateMachine/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -330,205 +51,39 @@
                 "assumeRoleAction": "*"
               }
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/RestrictDefaultSG/StateMachine/Role/Resource": [
+        "/WaitConditionIntegTest/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestrictDefaultSGStateMachineRole014DC528"
+            "data": "StateMachineRoleB840431D"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/RestrictDefaultSG/StateMachine/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/RestrictDefaultSecurityGroupIntegTest/RestrictDefaultSG/StateMachine/Role/DefaultPolicy/Resource": [
+        "/WaitConditionIntegTest/StateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestrictDefaultSGStateMachineRoleDefaultPolicy4B169C2B"
+            "data": "StateMachine2E01A3A5"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/RestrictDefaultSG/StateMachine/Resource": [
+        "/WaitConditionIntegTest/WaitCondition/Handle": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestrictDefaultSGStateMachineFD1CE043"
+            "data": "WaitConditionHandle1CC3DD84"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/RestrictDefaultSG/Resource/Resource": [
+        "/WaitConditionIntegTest/WaitCondition/Resource/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/RestrictDefaultSG/Resource/Resource/Default": [
+        "/WaitConditionIntegTest/WaitCondition/Resource/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestrictDefaultSG4A9037CD"
+            "data": "WaitCondition1046E89E"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/RestrictDefaultSG/Resource/Policy": [
+        "/WaitConditionIntegTest/WaitCondition/Resource/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -582,37 +137,43 @@
             }
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/RestrictDefaultSG/Resource/Policy/Resource": [
+        "/WaitConditionIntegTest/WaitCondition/Resource/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestrictDefaultSGPolicyB2BC8CF4"
+            "data": "WaitConditionPolicyD4185F63"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Topic": [
+        "/WaitConditionIntegTest/WaitCondition/WaitCondition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WaitConditionE05DAE56"
+          }
+        ],
+        "/WaitConditionIntegTest/LambdalessProvider/Topic": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Topic/Resource": [
+        "/WaitConditionIntegTest/LambdalessProvider/Topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdalessProviderTopic58DC2415"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Queue": [
+        "/WaitConditionIntegTest/LambdalessProvider/Queue": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Queue/Resource": [
+        "/WaitConditionIntegTest/LambdalessProvider/Queue/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdalessProviderQueue3E954037"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Queue/Policy": [
+        "/WaitConditionIntegTest/LambdalessProvider/Queue/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -622,13 +183,13 @@
             }
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Queue/Policy/Resource": [
+        "/WaitConditionIntegTest/LambdalessProvider/Queue/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdalessProviderQueuePolicy16C88515"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Queue/RestrictDefaultSecurityGroupIntegTestLambdalessProviderTopicB7B9DB66": [
+        "/WaitConditionIntegTest/LambdalessProvider/Queue/WaitConditionIntegTestLambdalessProviderTopic4BC6CBD6": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -643,13 +204,13 @@
             }
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Queue/RestrictDefaultSecurityGroupIntegTestLambdalessProviderTopicB7B9DB66/Resource": [
+        "/WaitConditionIntegTest/LambdalessProvider/Queue/WaitConditionIntegTestLambdalessProviderTopic4BC6CBD6/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdalessProviderQueueRestrictDefaultSecurityGroupIntegTestLambdalessProviderTopicB7B9DB66D5D6B7DB"
+            "data": "LambdalessProviderQueueWaitConditionIntegTestLambdalessProviderTopic4BC6CBD6C675897E"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Connection": [
+        "/WaitConditionIntegTest/LambdalessProvider/Connection": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -657,13 +218,13 @@
             }
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Connection/Connection": [
+        "/WaitConditionIntegTest/LambdalessProvider/Connection/Connection": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdalessProviderConnection803AC994"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/StateMachine": [
+        "/WaitConditionIntegTest/LambdalessProvider/StateMachine": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -737,7 +298,7 @@
             }
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/StateMachine/Role": [
+        "/WaitConditionIntegTest/LambdalessProvider/StateMachine/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -844,13 +405,13 @@
             }
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/StateMachine/Role/Resource": [
+        "/WaitConditionIntegTest/LambdalessProvider/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdalessProviderStateMachineRole4BDCD64E"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/StateMachine/Role/DefaultPolicy": [
+        "/WaitConditionIntegTest/LambdalessProvider/StateMachine/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -936,19 +497,19 @@
             }
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/StateMachine/Role/DefaultPolicy/Resource": [
+        "/WaitConditionIntegTest/LambdalessProvider/StateMachine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdalessProviderStateMachineRoleDefaultPolicy613E8B8C"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/StateMachine/Resource": [
+        "/WaitConditionIntegTest/LambdalessProvider/StateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdalessProviderStateMachine7D8C8128"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Pipe/Role": [
+        "/WaitConditionIntegTest/LambdalessProvider/Pipe/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -991,13 +552,13 @@
             }
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Pipe/Role/Resource": [
+        "/WaitConditionIntegTest/LambdalessProvider/Pipe/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdalessProviderPipeRoleD3BC051F"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Pipe/Role/DefaultPolicy": [
+        "/WaitConditionIntegTest/LambdalessProvider/Pipe/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1035,61 +596,70 @@
             }
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Pipe/Role/DefaultPolicy/Resource": [
+        "/WaitConditionIntegTest/LambdalessProvider/Pipe/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdalessProviderPipeRoleDefaultPolicy918C6032"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/LambdalessProvider/Pipe/Resource": [
+        "/WaitConditionIntegTest/LambdalessProvider/Pipe/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdalessProviderPipeE285A459"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/Exports/Output{\"Fn::GetAtt\":[\"Vpc8378EB38\",\"DefaultSecurityGroup\"]}": [
+        "/WaitConditionIntegTest/S3Prefix": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttVpc8378EB38DefaultSecurityGroupF5E0D218"
+            "data": "S3Prefix"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/BootstrapVersion": [
+        "/WaitConditionIntegTest/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/RestrictDefaultSecurityGroupIntegTest/CheckBootstrapVersion": [
+        "/WaitConditionIntegTest/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "LambdalessProviderLogGroup3404D3B2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdalessProviderLogGroup3404D3B2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
-      "displayName": "RestrictDefaultSecurityGroupIntegTest"
+      "displayName": "WaitConditionIntegTest"
     },
-    "RestrictDefaultSecurityGroupTestDefaultTestDeployAssert2D1A459C.assets": {
+    "WaitConditionTestDefaultTestDeployAssertF2D66AA7.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "RestrictDefaultSecurityGroupTestDefaultTestDeployAssert2D1A459C.assets.json",
+        "file": "WaitConditionTestDefaultTestDeployAssertF2D66AA7.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "RestrictDefaultSecurityGroupTestDefaultTestDeployAssert2D1A459C": {
+    "WaitConditionTestDefaultTestDeployAssertF2D66AA7": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "RestrictDefaultSecurityGroupTestDefaultTestDeployAssert2D1A459C.template.json",
+        "templateFile": "WaitConditionTestDefaultTestDeployAssertF2D66AA7.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1cc32a5db011b37c963aefffb09470d66265e2c3be527475c754af0c9003a3d7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f731bfb5b9ae01680bd1bd5f534994bf86cbe4cc6d08eb96ebc065e4f0982fc6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "RestrictDefaultSecurityGroupTestDefaultTestDeployAssert2D1A459C.assets"
+          "WaitConditionTestDefaultTestDeployAssertF2D66AA7.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -1098,11 +668,10 @@
         }
       },
       "dependencies": [
-        "RestrictDefaultSecurityGroupIntegTest",
-        "RestrictDefaultSecurityGroupTestDefaultTestDeployAssert2D1A459C.assets"
+        "WaitConditionTestDefaultTestDeployAssertF2D66AA7.assets"
       ],
       "metadata": {
-        "/RestrictDefaultSecurityGroupTest/DefaultTest/DeployAssert/AwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0/Default": [
+        "/WaitConditionTest/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacksef6ec6052c4f096911fe116affd5478d/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1116,44 +685,44 @@
             "data": "*"
           }
         ],
-        "/RestrictDefaultSecurityGroupTest/DefaultTest/DeployAssert/AwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0/Default/Default": [
+        "/WaitConditionTest/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacksef6ec6052c4f096911fe116affd5478d/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0"
+            "data": "AwsApiCallCloudFormationdescribeStacksef6ec6052c4f096911fe116affd5478d"
           }
         ],
-        "/RestrictDefaultSecurityGroupTest/DefaultTest/DeployAssert/AwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0/AssertionResults": [
+        "/WaitConditionTest/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacksef6ec6052c4f096911fe116affd5478d/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0"
+            "data": "AssertionResultsAwsApiCallCloudFormationdescribeStacksef6ec6052c4f096911fe116affd5478d"
           }
         ],
-        "/RestrictDefaultSecurityGroupTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+        "/WaitConditionTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
           }
         ],
-        "/RestrictDefaultSecurityGroupTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+        "/WaitConditionTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/RestrictDefaultSecurityGroupTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/WaitConditionTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/RestrictDefaultSecurityGroupTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/WaitConditionTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "RestrictDefaultSecurityGroupTest/DefaultTest/DeployAssert"
+      "displayName": "WaitConditionTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

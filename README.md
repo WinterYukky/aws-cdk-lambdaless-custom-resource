@@ -138,6 +138,82 @@ graph LR
     Express -.->|timeout| Pipes
 ```
 
+
+## LambdalessWaitCondition
+
+For long-running async operations that exceed the Custom Resource's 1-hour timeout, use `LambdalessWaitCondition`. It integrates with CloudFormation WaitCondition to support operations up to 12 hours.
+
+Your state machine uses the same input/output format as `LambdalessCustomResource`. **The output `Data` should typically be an explicit object with one key-value pair.** If you need to return multiple values, see [Advanced: Multiple key-value pairs](#advanced-multiple-key-value-pairs).
+
+```typescript
+const flow = new CustomResourceFlow(this, 'Flow', {
+  onCreate: // ... your long-running workflow ...
+    Pass.jsonata(this, 'Done', {
+      outputs: {
+        PhysicalResourceId: '{% $jobId %}',
+        Data: {
+          s3Prefix: '{% $artifactS3Prefix %}',
+        },
+      },
+    }),
+  onDelete: Pass.jsonata(this, 'Delete'),
+});
+
+const waitCondition = new LambdalessWaitCondition(this, 'CompileJob', {
+  stateMachine: new StateMachine(this, 'StateMachine', {
+    definitionBody: DefinitionBody.fromChainable(flow),
+  }),
+  timeout: Duration.hours(12),
+  properties: {
+    jobDefinitionArn: jobDefinition.jobDefinitionArn,
+    jobQueueArn: jobQueue.jobQueueArn,
+  },
+});
+
+const s3Prefix = waitCondition.getAttString('s3Prefix');
+```
+
+### Advanced: Multiple key-value pairs
+
+`LambdalessWaitCondition` uses CloudFormation WaitCondition internally. In a standard WaitCondition, `count` specifies the number of **signals** to wait for (e.g., from multiple EC2 instances), each identified by a `UniqueId`.
+
+This construct repurposes that mechanism: each key in your `Data` object is treated as one signal, with the key name as `UniqueId` and the value as the signal's `Data`. This means:
+
+- **`count` must exactly match the number of keys in `Data`.** If `count` is too high, the stack waits forever. If too low, some values cannot be referenced.
+- **Always return an explicit `Data` object with known keys.** Never return an API response object directly — unknown or extra keys will cause `count` to mismatch.
+
+```typescript
+// ✅ Good: explicit key-value pairs, count matches
+Pass.jsonata(this, 'Done', {
+  outputs: {
+    PhysicalResourceId: '{% $jobId %}',
+    Data: {
+      s3Prefix: '{% $artifactS3Prefix %}',
+      version: '{% $modelVersion %}',
+    },
+  },
+});
+
+const waitCondition = new LambdalessWaitCondition(this, 'WC', {
+  stateMachine,
+  count: 2, // Matches the 2 keys in Data
+});
+
+const s3Prefix = waitCondition.getAttString('s3Prefix');
+const version = waitCondition.getAttString('version');
+```
+
+```typescript
+// ❌ Bad: passing API response directly — keys are unknown and count will mismatch
+Pass.jsonata(this, 'Done', {
+  outputs: {
+    PhysicalResourceId: '{% $jobId %}',
+    Data: '{% $states.result %}', // Don't do this!
+  },
+});
+```
+
+
 ## License
 
 Apache-2.0

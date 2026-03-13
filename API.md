@@ -424,6 +424,165 @@ public readonly ref: string;
 ---
 
 
+### LambdalessWaitCondition <a name="LambdalessWaitCondition" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition"></a>
+
+#### Initializers <a name="Initializers" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.Initializer"></a>
+
+```typescript
+import { LambdalessWaitCondition } from 'aws-cdk-lambdaless-custom-resource'
+
+new LambdalessWaitCondition(scope: Construct, id: string, props: LambdalessWaitConditionProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.Initializer.parameter.props">props</a></code> | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps">LambdalessWaitConditionProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps">LambdalessWaitConditionProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.with">with</a></code> | Applies one or more mixins to this construct. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getAttString">getAttString</a></code> | *No description.* |
+
+---
+
+##### `toString` <a name="toString" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `with` <a name="with" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
+
+##### `getAttString` <a name="getAttString" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getAttString"></a>
+
+```typescript
+public getAttString(uniqueId: string): string
+```
+
+###### `uniqueId`<sup>Required</sup> <a name="uniqueId" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getAttString.parameter.uniqueId"></a>
+
+- *Type:* string
+
+---
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### `isConstruct` <a name="isConstruct" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.isConstruct"></a>
+
+```typescript
+import { LambdalessWaitCondition } from 'aws-cdk-lambdaless-custom-resource'
+
+LambdalessWaitCondition.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
+
+###### `x`<sup>Required</sup> <a name="x" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.property.attrData">attrData</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `attrData`<sup>Required</sup> <a name="attrData" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.property.attrData"></a>
+
+```typescript
+public readonly attrData: string;
+```
+
+- *Type:* string
+
+---
+
+
 ## Structs <a name="Structs" id="Structs"></a>
 
 ### CustomResourceFlowProps <a name="CustomResourceFlowProps" id="aws-cdk-lambdaless-custom-resource.CustomResourceFlowProps"></a>
@@ -624,6 +783,91 @@ new CustomResource(stack, 'MyCustomResource', {
 });
 ```
 
+
+### LambdalessWaitConditionProps <a name="LambdalessWaitConditionProps" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps"></a>
+
+#### Initializer <a name="Initializer" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.Initializer"></a>
+
+```typescript
+import { LambdalessWaitConditionProps } from 'aws-cdk-lambdaless-custom-resource'
+
+const lambdalessWaitConditionProps: LambdalessWaitConditionProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.stateMachine">stateMachine</a></code> | <code>aws-cdk-lib.aws_stepfunctions.IStateMachine</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.count">count</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.properties">properties</a></code> | <code>{[ key: string ]: any}</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.resourceType">resourceType</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.timeout">timeout</a></code> | <code>aws-cdk-lib.Duration</code> | *No description.* |
+
+---
+
+##### `stateMachine`<sup>Required</sup> <a name="stateMachine" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.stateMachine"></a>
+
+```typescript
+public readonly stateMachine: IStateMachine;
+```
+
+- *Type:* aws-cdk-lib.aws_stepfunctions.IStateMachine
+
+---
+
+##### `count`<sup>Optional</sup> <a name="count" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.count"></a>
+
+```typescript
+public readonly count: number;
+```
+
+- *Type:* number
+- *Default:* automatically determined by getAttString calls
+
+---
+
+##### `properties`<sup>Optional</sup> <a name="properties" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.properties"></a>
+
+```typescript
+public readonly properties: {[ key: string ]: any};
+```
+
+- *Type:* {[ key: string ]: any}
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+
+---
+
+##### `resourceType`<sup>Optional</sup> <a name="resourceType" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.resourceType"></a>
+
+```typescript
+public readonly resourceType: string;
+```
+
+- *Type:* string
+
+---
+
+##### `timeout`<sup>Optional</sup> <a name="timeout" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps.property.timeout"></a>
+
+```typescript
+public readonly timeout: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.hours(12)
+
+---
 
 
 

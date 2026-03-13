@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0": {
-   "Type": "Custom::DeployAssert@SdkCallEC2describeSecurityGroups",
+  "AwsApiCallCloudFormationdescribeStacksef6ec6052c4f096911fe116affd5478d": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,25 +9,18 @@
       "Arn"
      ]
     },
-    "service": "EC2",
-    "api": "describeSecurityGroups",
-    "expected": "{\"$ObjectLike\":{\"SecurityGroups\":[{\"IpPermissions\":[],\"IpPermissionsEgress\":[]}]}}",
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$StringLike\":\"s3://my-bucket/path/to/artifact\"}",
+    "actualPath": "Stacks.0.Outputs.0.OutputValue",
     "parameters": {
-     "GroupIds": {
-      "Fn::Join": [
-       "",
-       [
-        "[\"",
-        {
-         "Fn::ImportValue": "RestrictDefaultSecurityGroupIntegTest:ExportsOutputFnGetAttVpc8378EB38DefaultSecurityGroupF5E0D218"
-        },
-        "\"]"
-       ]
-      ]
-     }
+     "StackName": "\"WaitConditionIntegTest\""
     },
-    "flattenResponse": "false",
-    "salt": "1773332462252"
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Stacks.0.Outputs.0.OutputValue"
+    ],
+    "salt": "1773332464049"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -60,7 +53,7 @@
        "Statement": [
         {
          "Action": [
-          "ec2:DescribeSecurityGroups"
+          "cloudformation:DescribeStacks"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -95,10 +88,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0": {
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacksef6ec6052c4f096911fe116affd5478d": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallEC2describeSecurityGroups6ad015b9cce9b36a98cd9794471d1ab0",
+     "AwsApiCallCloudFormationdescribeStacksef6ec6052c4f096911fe116affd5478d",
      "assertion"
     ]
    }
