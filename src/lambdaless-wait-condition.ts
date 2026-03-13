@@ -10,7 +10,7 @@ export interface LambdalessWaitConditionProps {
    */
   readonly timeout?: cdk.Duration;
   /**
-   * @default - automatically determined by getDataById calls
+   * @default - automatically determined by getAttString calls
    */
   readonly count?: number;
   readonly properties?: { [key: string]: any };
@@ -51,7 +51,7 @@ export class LambdalessWaitCondition extends Construct {
     this.attrData = waitCondition.attrData.toString();
   }
 
-  getDataById(uniqueId: string): string {
+  getAttString(uniqueId: string): string {
     this.uniqueIds.add(uniqueId);
     const prefix = `"${uniqueId}":"`;
     const afterPrefix = cdk.Fn.select(1, cdk.Fn.split(prefix, this.attrData));

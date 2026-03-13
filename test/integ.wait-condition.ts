@@ -33,7 +33,7 @@ const waitCondition = new LambdalessWaitCondition(stack, 'WaitCondition', {
 });
 
 new cdk.CfnOutput(stack, 'S3Prefix', {
-  value: waitCondition.getDataById('s3Prefix'),
+  value: waitCondition.getAttString('s3Prefix'),
 });
 
 const integ = new IntegTest(app, 'WaitConditionTest', {
