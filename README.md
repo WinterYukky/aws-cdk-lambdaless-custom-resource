@@ -124,6 +124,31 @@ Access outputs in your CDK code:
 customResource.getAttString('key1')  // Returns 'value1'
 ```
 
+## LambdalessWaitCondition
+
+For long-running async operations that exceed the Custom Resource's 1-hour timeout, use `LambdalessWaitCondition`. It integrates with CloudFormation WaitCondition to support operations up to 12 hours.
+
+Your state machine uses the same input/output format as `LambdalessCustomResource`. Each key in the output `Data` becomes a separate WaitCondition signal, and the `count` is automatically determined by how many `getDataById()` calls you make.
+
+```typescript
+import { LambdalessWaitCondition } from 'aws-cdk-lambdaless-custom-resource';
+
+const waitCondition = new LambdalessWaitCondition(this, 'CompileJob', {
+  stateMachine: new StateMachine(this, 'StateMachine', {
+    definitionBody: DefinitionBody.fromChainable(flow),
+  }),
+  timeout: Duration.hours(12),
+  properties: {
+    jobDefinitionArn: jobDefinition.jobDefinitionArn,
+    jobQueueArn: jobQueue.jobQueueArn,
+  },
+});
+
+// Extract data from WaitCondition signals
+// Each call registers the key, and count is set automatically
+const s3Prefix = waitCondition.getDataById('s3Prefix');
+```
+
 ## Architecture
 
 ```mermaid
@@ -135,6 +160,7 @@ graph LR
     Express -->|startExecution| Standard[Your State Machine]
     Express -->|describeExecution| Standard
     Express -->|HttpInvoke| CFn
+    Express -.->|HttpInvoke| WC[WaitCondition]
     Express -.->|timeout| Pipes
 ```
 
