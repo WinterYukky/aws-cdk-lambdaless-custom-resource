@@ -124,11 +124,26 @@ Access outputs in your CDK code:
 customResource.getAttString('key1')  // Returns 'value1'
 ```
 
+## Architecture
+
+```mermaid
+graph LR
+    CFn[CloudFormation] -->|serviceToken| SNS[SNS Topic]
+    SNS --> SQS[SQS Queue]
+    SQS --> Pipes[EventBridge Pipes]
+    Pipes -->|invoke| Express[Express State Machine]
+    Express -->|startExecution| Standard[Your State Machine]
+    Express -->|describeExecution| Standard
+    Express -->|HttpInvoke| CFn
+    Express -.->|timeout| Pipes
+```
+
+
 ## LambdalessWaitCondition
 
 For long-running async operations that exceed the Custom Resource's 1-hour timeout, use `LambdalessWaitCondition`. It integrates with CloudFormation WaitCondition to support operations up to 12 hours.
 
-Your state machine uses the same input/output format as `LambdalessCustomResource`. **The output `Data` must be an explicit object with exactly one key-value pair:**
+Your state machine uses the same input/output format as `LambdalessCustomResource`. **The output `Data` should typically be an explicit object with one key-value pair.** If you need to return multiple values, see [Advanced: Multiple key-value pairs](#advanced-multiple-key-value-pairs).
 
 ```typescript
 const flow = new CustomResourceFlow(this, 'Flow', {
@@ -137,7 +152,7 @@ const flow = new CustomResourceFlow(this, 'Flow', {
       outputs: {
         PhysicalResourceId: '{% $jobId %}',
         Data: {
-          s3Prefix: '{% $artifactS3Prefix %}', // Return exactly one key-value pair
+          s3Prefix: '{% $artifactS3Prefix %}',
         },
       },
     }),
@@ -198,29 +213,6 @@ Pass.jsonata(this, 'Done', {
 });
 ```
 
-```typescript
-// ❌ Bad: passing a variable as Data — the object structure may change unexpectedly
-Pass.jsonata(this, 'Done', {
-  outputs: {
-    PhysicalResourceId: '{% $jobId %}',
-    Data: '{% $jobResult %}', // Don't do this either!
-  },
-});
-```
-
-## Architecture
-
-```mermaid
-graph LR
-    CFn[CloudFormation] -->|serviceToken| SNS[SNS Topic]
-    SNS --> SQS[SQS Queue]
-    SQS --> Pipes[EventBridge Pipes]
-    Pipes -->|invoke| Express[Express State Machine]
-    Express -->|startExecution| Standard[Your State Machine]
-    Express -->|describeExecution| Standard
-    Express -->|HttpInvoke| CFn
-    Express -.->|timeout| Pipes
-```
 
 ## License
 
