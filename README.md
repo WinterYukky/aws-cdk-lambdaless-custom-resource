@@ -149,7 +149,6 @@ const waitCondition = new LambdalessWaitCondition(this, 'CompileJob', {
     definitionBody: DefinitionBody.fromChainable(flow),
   }),
   timeout: Duration.hours(12),
-  count: 1,
   properties: {
     jobDefinitionArn: jobDefinition.jobDefinitionArn,
     jobQueueArn: jobQueue.jobQueueArn,
