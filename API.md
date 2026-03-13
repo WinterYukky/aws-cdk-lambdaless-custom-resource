@@ -466,7 +466,7 @@ new LambdalessWaitCondition(scope: Construct, id: string, props: LambdalessWaitC
 | --- | --- |
 | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.toString">toString</a></code> | Returns a string representation of this construct. |
 | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.with">with</a></code> | Applies one or more mixins to this construct. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getDataById">getDataById</a></code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getAttString">getAttString</a></code> | *No description.* |
 
 ---
 
@@ -499,13 +499,13 @@ The mixins to apply.
 
 ---
 
-##### `getDataById` <a name="getDataById" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getDataById"></a>
+##### `getAttString` <a name="getAttString" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getAttString"></a>
 
 ```typescript
-public getDataById(uniqueId: string): string
+public getAttString(uniqueId: string): string
 ```
 
-###### `uniqueId`<sup>Required</sup> <a name="uniqueId" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getDataById.parameter.uniqueId"></a>
+###### `uniqueId`<sup>Required</sup> <a name="uniqueId" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getAttString.parameter.uniqueId"></a>
 
 - *Type:* string
 
@@ -824,7 +824,7 @@ public readonly count: number;
 ```
 
 - *Type:* number
-- *Default:* automatically determined by getDataById calls
+- *Default:* automatically determined by getAttString calls
 
 ---
 
