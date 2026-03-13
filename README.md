@@ -198,6 +198,16 @@ Pass.jsonata(this, 'Done', {
 });
 ```
 
+```typescript
+// ❌ Bad: passing a variable as Data — the object structure may change unexpectedly
+Pass.jsonata(this, 'Done', {
+  outputs: {
+    PhysicalResourceId: '{% $jobId %}',
+    Data: '{% $jobResult %}', // Don't do this either!
+  },
+});
+```
+
 ## Architecture
 
 ```mermaid
