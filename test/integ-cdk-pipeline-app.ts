@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
@@ -69,6 +70,18 @@ new BucketDeployment(pipelineStack, 'UploadSource', {
         'test/integ.*',
       ],
       bundling: {
+        local: {
+          tryBundle(outputDir: string) {
+            try {
+              execSync(
+                `cd ${path.join(__dirname, '..')} && zip -r ${outputDir}/source.zip . -x "node_modules/*" "cdk.out/*" ".git/*" "*.snapshot/*" "examples/*" "test/integ.*"`,
+              );
+              return true;
+            } catch {
+              return false;
+            }
+          },
+        },
         image: cdk.DockerImage.fromRegistry(
           'public.ecr.aws/docker/library/alpine',
         ),

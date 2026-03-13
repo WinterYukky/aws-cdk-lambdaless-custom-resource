@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Authorization, Connection } from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { Alias } from 'aws-cdk-lib/aws-kms';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 import { CfnSubscription, Topic } from 'aws-cdk-lib/aws-sns';
 import { SqsSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
@@ -85,7 +86,9 @@ class LambdalessProvider extends Construct {
   constructor(scope: Construct, id: string, _props: LambdalessProviderProps) {
     super(scope, id);
 
-    const topic = new Topic(this, 'Topic');
+    const topic = new Topic(this, 'Topic', {
+      masterKey: Alias.fromAliasName(this, 'SnsKey', 'alias/aws/sns'),
+    });
     const queue = new Queue(this, 'Queue');
     this.subscription = topic.addSubscription(new SqsSubscription(queue));
     const stateMachine = this.createStateMachine();
