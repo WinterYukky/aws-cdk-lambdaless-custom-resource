@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-    if: contains(github.event.pull_request.labels.*.name, 'auto-upgrade') && (github.event.pull_request.user.login == 'github-actions[bot]')
+    if: contains(github.event.pull_request.labels.*.name, 'auto-upgrade') && (github.event.pull_request.user.login == 'winteryukky-projen-bot[bot]')
     steps:
       - uses: hmarr/auto-approve-action@f0939ea97e9205ef24d872e76833fa908a770363
         with:
