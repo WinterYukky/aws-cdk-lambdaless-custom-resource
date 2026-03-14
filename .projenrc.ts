@@ -61,7 +61,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   },
   experimentalIntegRunner: true,
   autoApproveOptions: {
-    allowedUsernames: ['github-actions[bot]'],
+    allowedUsernames: ['winteryukky-projen-bot[bot]'],
     label: 'auto-upgrade',
   },
   tsconfig: {
