@@ -350,9 +350,7 @@ class LambdalessProvider extends Construct {
     }).next(cfnResponse);
     const routeByMode = Choice.jsonata(this, 'Dispatch Mode')
       .when(
-        Condition.jsonata(
-          `{% $Mode = '${LAMBDALESS_MODE.CUSTOM_RESOURCE}' %}`,
-        ),
+        Condition.jsonata(`{% $Mode = '${LAMBDALESS_MODE.CUSTOM_RESOURCE}' %}`),
         describeExecution,
       )
       .when(

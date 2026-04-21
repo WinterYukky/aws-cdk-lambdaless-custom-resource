@@ -424,6 +424,201 @@ public readonly ref: string;
 ---
 
 
+### LambdalessJsonParse <a name="LambdalessJsonParse" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse"></a>
+
+Parses a JSON-formatted string at CloudFormation deployment time and exposes its top-level entries as simple `Fn::GetAtt` tokens.
+
+This is a Lambdaless counterpart to `aws-cdk-lib.CfnJson`. Unlike `CfnJson`,
+it is backed by the shared Step Functions orchestrator used by
+`LambdalessCustomResource`, so no Lambda runtime is ever provisioned.
+
+The primary use case is to flatten a JSON *string* token (for example, the
+`Data` attribute of an `AWS::CloudFormation::WaitCondition`, or any opaque
+string attribute returned by another custom resource) into individual
+`Fn::GetAtt` references. The resulting tokens contain no quote characters
+and therefore survive being embedded in contexts that CDK re-serializes
+with `JSON.stringify` (for example, `eks.Cluster#addManifest`).
+
+*Example*
+
+```typescript
+declare const waitCondition: cdk.CfnWaitCondition;
+const parsed = new LambdalessJsonParse(this, 'ParsedAttrData', {
+  value: waitCondition.attrData.toString(),
+});
+new cdk.CfnOutput(this, 'S3Prefix', {
+  value: parsed.getAttString('s3Prefix'),
+});
+```
+
+
+#### Initializers <a name="Initializers" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.Initializer"></a>
+
+```typescript
+import { LambdalessJsonParse } from 'aws-cdk-lambdaless-custom-resource'
+
+new LambdalessJsonParse(scope: Construct, id: string, props: LambdalessJsonParseProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.Initializer.parameter.props">props</a></code> | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParseProps">LambdalessJsonParseProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParseProps">LambdalessJsonParseProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.with">with</a></code> | Applies one or more mixins to this construct. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.getAtt">getAtt</a></code> | Returns the value of a top-level entry of the parsed JSON object as a generic `Fn::GetAtt` reference. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.getAttString">getAttString</a></code> | Returns the value of a top-level entry of the parsed JSON object as a string-encoded `Fn::GetAtt` token. |
+
+---
+
+##### `toString` <a name="toString" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `with` <a name="with" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
+
+##### `getAtt` <a name="getAtt" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.getAtt"></a>
+
+```typescript
+public getAtt(attributeName: string): Reference
+```
+
+Returns the value of a top-level entry of the parsed JSON object as a generic `Fn::GetAtt` reference.
+
+###### `attributeName`<sup>Required</sup> <a name="attributeName" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.getAtt.parameter.attributeName"></a>
+
+- *Type:* string
+
+the name of the top-level key in the parsed JSON.
+
+---
+
+##### `getAttString` <a name="getAttString" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.getAttString"></a>
+
+```typescript
+public getAttString(attributeName: string): string
+```
+
+Returns the value of a top-level entry of the parsed JSON object as a string-encoded `Fn::GetAtt` token.
+
+###### `attributeName`<sup>Required</sup> <a name="attributeName" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.getAttString.parameter.attributeName"></a>
+
+- *Type:* string
+
+the name of the top-level key in the parsed JSON.
+
+---
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### `isConstruct` <a name="isConstruct" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.isConstruct"></a>
+
+```typescript
+import { LambdalessJsonParse } from 'aws-cdk-lambdaless-custom-resource'
+
+LambdalessJsonParse.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
+
+###### `x`<sup>Required</sup> <a name="x" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParse.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+
 ### LambdalessWaitCondition <a name="LambdalessWaitCondition" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition"></a>
 
 #### Initializers <a name="Initializers" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.Initializer"></a>
@@ -507,14 +702,13 @@ public getAttString(uniqueId: string): string
 
 Returns the value of an attribute signaled to the wait condition through the key/value pairs encoded in `attrData` (the JSON document assembled by `CfnWaitCondition` from each `SignalResource` call).
 
-Internally, this parses `attrData` through an auxiliary
-`LambdalessCustomResource` so that the returned token is a simple
-`Fn::GetAtt`. This avoids CloudFormation template escaping pitfalls that
-occur when the raw `Fn::Split`/`Fn::Select` chain is embedded in contexts
-whose content ends up being `JSON.stringify`'d by CDK (for example,
-`eks.Cluster#addManifest`).
+Internally, `attrData` is parsed through a shared Lambdaless helper so
+that the returned token is a simple `Fn::GetAtt`. This avoids
+CloudFormation template escaping pitfalls that occur when the raw JSON
+string is embedded in contexts whose content ends up being
+`JSON.stringify`'d by CDK (for example, `eks.Cluster#addManifest`).
 
-The auxiliary resource is created lazily on the first call, so consumers
+The helper resource is created lazily on the first call, so consumers
 that do not call `getAttString` pay no extra cost.
 
 ###### `uniqueId`<sup>Required</sup> <a name="uniqueId" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getAttString.parameter.uniqueId"></a>
@@ -795,6 +989,69 @@ new CustomResource(stack, 'MyCustomResource', {
 });
 ```
 
+
+### LambdalessJsonParseProps <a name="LambdalessJsonParseProps" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParseProps"></a>
+
+Properties for `LambdalessJsonParse`.
+
+#### Initializer <a name="Initializer" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParseProps.Initializer"></a>
+
+```typescript
+import { LambdalessJsonParseProps } from 'aws-cdk-lambdaless-custom-resource'
+
+const lambdalessJsonParseProps: LambdalessJsonParseProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParseProps.property.value">value</a></code> | <code>string</code> | The JSON-formatted string to deserialize at deployment time. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParseProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | The policy to apply when this resource is removed from the application. |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessJsonParseProps.property.resourceType">resourceType</a></code> | <code>string</code> | CloudFormation custom resource type name. |
+
+---
+
+##### `value`<sup>Required</sup> <a name="value" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParseProps.property.value"></a>
+
+```typescript
+public readonly value: string;
+```
+
+- *Type:* string
+
+The JSON-formatted string to deserialize at deployment time.
+
+Can contain
+CloudFormation tokens, including `Fn::GetAtt` on other resources.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParseProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* cdk.RemovalPolicy.Destroy
+
+The policy to apply when this resource is removed from the application.
+
+---
+
+##### `resourceType`<sup>Optional</sup> <a name="resourceType" id="aws-cdk-lambdaless-custom-resource.LambdalessJsonParseProps.property.resourceType"></a>
+
+```typescript
+public readonly resourceType: string;
+```
+
+- *Type:* string
+- *Default:* AWS::CloudFormation::CustomResource
+
+CloudFormation custom resource type name.
+
+---
 
 ### LambdalessWaitConditionProps <a name="LambdalessWaitConditionProps" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitConditionProps"></a>
 
