@@ -11,17 +11,17 @@
     },
     "service": "CloudFormation",
     "api": "describeStacks",
-    "expected": "{\"$StringLike\":\"ap-northeast-1\"}",
-    "actualPath": "Stacks.0.Outputs.0.OutputValue.region",
+    "expected": "{\"$StringLike\":\"https://api.example.com\"}",
+    "actualPath": "Stacks.0.Outputs.0.OutputValue.endpoint",
     "parameters": {
      "StackName": "\"WaitConditionIntegTest\""
     },
     "flattenResponse": "true",
     "outputPaths": [
-     "Stacks.0.Outputs.0.OutputValue.s3Prefix",
-     "Stacks.0.Outputs.0.OutputValue.region"
+     "Stacks.0.Outputs.0.OutputValue.message",
+     "Stacks.0.Outputs.0.OutputValue.endpoint"
     ],
-    "salt": "1776759485961"
+    "salt": "1776761442679"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

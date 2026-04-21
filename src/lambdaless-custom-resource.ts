@@ -532,15 +532,15 @@ export interface LambdalessJsonParseProps {
  * string attribute returned by another custom resource) into individual
  * `Fn::GetAtt` references. The resulting tokens contain no quote characters
  * and therefore survive being embedded in contexts that CDK re-serializes
- * with `JSON.stringify` (for example, `eks.Cluster#addManifest`).
+ * with `JSON.stringify`.
  *
  * @example
  * declare const waitCondition: cdk.CfnWaitCondition;
- * const parsed = new LambdalessJsonParse(this, 'ParsedAttrData', {
+ * const parsed = new LambdalessJsonParse(this, 'Parsed', {
  *   value: waitCondition.attrData.toString(),
  * });
- * new cdk.CfnOutput(this, 'S3Prefix', {
- *   value: parsed.getAttString('s3Prefix'),
+ * new cdk.CfnOutput(this, 'Message', {
+ *   value: parsed.getAttString('message'),
  * });
  */
 export class LambdalessJsonParse extends Construct {

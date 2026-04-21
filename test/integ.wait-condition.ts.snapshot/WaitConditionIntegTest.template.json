@@ -20,7 +20,7 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "DefinitionString": "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"CreateWithData\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"Update\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"DeleteNoOp\"}]},\"CreateWithData\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $RequestId %}\",\"Data\":{\"s3Prefix\":\"s3://my-bucket/path/to/artifact\",\"region\":\"ap-northeast-1\"}},\"End\":true},\"Update\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"DeleteNoOp\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $PhysicalResourceId %}\"},\"End\":true}}}",
+    "DefinitionString": "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"CreateWithData\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"Update\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"DeleteNoOp\"}]},\"CreateWithData\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $RequestId %}\",\"Data\":{\"message\":\"Hello, World!\",\"endpoint\":\"https://api.example.com\"}},\"End\":true},\"Update\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"DeleteNoOp\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $PhysicalResourceId %}\"},\"End\":true}}}",
     "RoleArn": {
      "Fn::GetAtt": [
       "StateMachineRoleB840431D",
@@ -675,18 +675,18 @@
     "Fn::Join": [
      "",
      [
-      "{\"s3Prefix\":\"",
+      "{\"message\":\"",
       {
        "Fn::GetAtt": [
         "WaitConditionParsedAttrData194D05DC",
-        "s3Prefix"
+        "message"
        ]
       },
-      "\",\"region\":\"",
+      "\",\"endpoint\":\"",
       {
        "Fn::GetAtt": [
         "WaitConditionParsedAttrData194D05DC",
-        "region"
+        "endpoint"
        ]
       },
       "\"}"

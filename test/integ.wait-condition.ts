@@ -15,8 +15,8 @@ const flow = new CustomResourceFlow(stack, 'Flow', {
     outputs: {
       PhysicalResourceId: '{% $RequestId %}',
       Data: {
-        s3Prefix: 's3://my-bucket/path/to/artifact',
-        region: 'ap-northeast-1',
+        message: 'Hello, World!',
+        endpoint: 'https://api.example.com',
       },
     },
   }),
@@ -35,13 +35,14 @@ const waitCondition = new LambdalessWaitCondition(stack, 'WaitCondition', {
   resourceType: 'Custom::WaitConditionTest',
 });
 
-// Exercise a JSON.stringify'd context (as used by, e.g.,
-// `eks.Cluster#addManifest`). The returned token must survive being embedded
-// inside a string literal that CDK resolves at synthesis time.
+// Exercise a JSON.stringify'd context. The returned token must survive being
+// embedded inside a string literal that CDK re-serializes at synthesis time
+// (e.g. any construct that goes through `Stack.toJsonString`, or user code
+// that calls `JSON.stringify` on an object containing tokens).
 new cdk.CfnOutput(stack, 'StringifiedPayload', {
   value: JSON.stringify({
-    s3Prefix: waitCondition.getAttString('s3Prefix'),
-    region: waitCondition.getAttString('region'),
+    message: waitCondition.getAttString('message'),
+    endpoint: waitCondition.getAttString('endpoint'),
   }),
 });
 
@@ -60,10 +61,10 @@ const describe = integ.assertions.awsApiCall(
 // (`deepParseJson`). We assert on the parsed fields, which also proves that
 // the stringified payload round-trips through CloudFormation as valid JSON.
 describe.assertAtPath(
-  'Stacks.0.Outputs.0.OutputValue.s3Prefix',
-  ExpectedResult.stringLikeRegexp('s3://my-bucket/path/to/artifact'),
+  'Stacks.0.Outputs.0.OutputValue.message',
+  ExpectedResult.stringLikeRegexp('Hello, World!'),
 );
 describe.assertAtPath(
-  'Stacks.0.Outputs.0.OutputValue.region',
-  ExpectedResult.stringLikeRegexp('ap-northeast-1'),
+  'Stacks.0.Outputs.0.OutputValue.endpoint',
+  ExpectedResult.stringLikeRegexp('https://api.example.com'),
 );

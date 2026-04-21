@@ -64,7 +64,7 @@ export class LambdalessWaitCondition extends Construct {
    * that the returned token is a simple `Fn::GetAtt`. This avoids
    * CloudFormation template escaping pitfalls that occur when the raw JSON
    * string is embedded in contexts whose content ends up being
-   * `JSON.stringify`'d by CDK (for example, `eks.Cluster#addManifest`).
+   * `JSON.stringify`'d by CDK.
    *
    * The helper resource is created lazily on the first call, so consumers
    * that do not call `getAttString` pay no extra cost.
