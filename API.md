@@ -437,17 +437,17 @@ The primary use case is to flatten a JSON *string* token (for example, the
 string attribute returned by another custom resource) into individual
 `Fn::GetAtt` references. The resulting tokens contain no quote characters
 and therefore survive being embedded in contexts that CDK re-serializes
-with `JSON.stringify` (for example, `eks.Cluster#addManifest`).
+with `JSON.stringify`.
 
 *Example*
 
 ```typescript
 declare const waitCondition: cdk.CfnWaitCondition;
-const parsed = new LambdalessJsonParse(this, 'ParsedAttrData', {
+const parsed = new LambdalessJsonParse(this, 'Parsed', {
   value: waitCondition.attrData.toString(),
 });
-new cdk.CfnOutput(this, 'S3Prefix', {
-  value: parsed.getAttString('s3Prefix'),
+new cdk.CfnOutput(this, 'Message', {
+  value: parsed.getAttString('message'),
 });
 ```
 
@@ -706,7 +706,7 @@ Internally, `attrData` is parsed through a shared Lambdaless helper so
 that the returned token is a simple `Fn::GetAtt`. This avoids
 CloudFormation template escaping pitfalls that occur when the raw JSON
 string is embedded in contexts whose content ends up being
-`JSON.stringify`'d by CDK (for example, `eks.Cluster#addManifest`).
+`JSON.stringify`'d by CDK.
 
 The helper resource is created lazily on the first call, so consumers
 that do not call `getAttString` pay no extra cost.
