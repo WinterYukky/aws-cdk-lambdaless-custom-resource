@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/958156a9b3e055ec866860acaff39d412096eb07633a926470aeb969d53e2a4d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/100fa12b6c519759c051c0f8eb619acac7bfcae529b523becafbfaefd3ec324a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -149,38 +149,7 @@
             "data": "WaitConditionE05DAE56"
           }
         ],
-        "/WaitConditionIntegTest/WaitCondition/ParseStateMachine": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "definitionBody": "*"
-            }
-          }
-        ],
-        "/WaitConditionIntegTest/WaitCondition/ParseStateMachine/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/WaitConditionIntegTest/WaitCondition/ParseStateMachine/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WaitConditionParseStateMachineRoleD7B9261B"
-          }
-        ],
-        "/WaitConditionIntegTest/WaitCondition/ParseStateMachine/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WaitConditionParseStateMachineE07FB5CB"
-          }
-        ],
-        "/WaitConditionIntegTest/WaitCondition/Parsed/Resource": [
+        "/WaitConditionIntegTest/WaitCondition/ParsedAttrData/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -202,70 +171,10 @@
             "data": "*"
           }
         ],
-        "/WaitConditionIntegTest/WaitCondition/Parsed/Resource/Default": [
+        "/WaitConditionIntegTest/WaitCondition/ParsedAttrData/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WaitConditionParsedD684EA83"
-          }
-        ],
-        "/WaitConditionIntegTest/WaitCondition/Parsed/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/WaitConditionIntegTest/WaitCondition/Parsed/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WaitConditionParsedPolicyAF050360"
+            "data": "WaitConditionParsedAttrData194D05DC"
           }
         ],
         "/WaitConditionIntegTest/LambdalessProvider/Topic": [
@@ -506,22 +415,6 @@
             "data": {
               "addToPrincipalPolicy": [
                 {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
               ]
             }
           },
@@ -783,7 +676,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/98a72794df774f8d21bbf531a09cccf85ecb6e929f0a48693b0bc3a31f2f24ab.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e04f183b2b3c09484cd964acbbcdc256104d7c2a7c5f6ca81b6600dec4844a80.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

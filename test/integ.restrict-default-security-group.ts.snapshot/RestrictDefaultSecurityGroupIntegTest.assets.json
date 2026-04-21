@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "357f39691649d449593efa1431c70b311eef6d165e4a859821da0f5e41d0821f": {
+    "0c0a6daee7fdf5221553e963482cabd13759742221c04bc66b702084da039188": {
       "displayName": "RestrictDefaultSecurityGroupIntegTest Template",
       "source": {
         "path": "RestrictDefaultSecurityGroupIntegTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-828a4ab7": {
+        "current_account-current_region-270a8e0e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "357f39691649d449593efa1431c70b311eef6d165e4a859821da0f5e41d0821f.json",
+          "objectKey": "0c0a6daee7fdf5221553e963482cabd13759742221c04bc66b702084da039188.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,13 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
-import {
-  DefinitionBody,
-  IStateMachine,
-  Pass,
-  StateMachine,
-} from 'aws-cdk-lib/aws-stepfunctions';
+import { IStateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 import { Construct } from 'constructs';
-import { CustomResourceFlow } from './fragments';
-import { LambdalessCustomResource } from './lambdaless-custom-resource';
+import {
+  LambdalessCustomResource,
+  LambdalessJsonParse,
+} from './lambdaless-custom-resource';
 
 export interface LambdalessWaitConditionProps {
   readonly stateMachine: IStateMachine;
@@ -28,8 +25,7 @@ export class LambdalessWaitCondition extends Construct {
   readonly attrData: string;
   private readonly uniqueIds = new Set<string>();
   private readonly explicitCount?: number;
-  private readonly removalPolicy?: cdk.RemovalPolicy;
-  private parsedResource?: LambdalessCustomResource;
+  private parsedAttrData?: LambdalessJsonParse;
 
   constructor(
     scope: Construct,
@@ -39,7 +35,6 @@ export class LambdalessWaitCondition extends Construct {
     super(scope, id);
     const timeout = props.timeout ?? cdk.Duration.hours(12);
     this.explicitCount = props.count;
-    this.removalPolicy = props.removalPolicy;
 
     const handle = new cdk.CfnWaitConditionHandle(this, 'Handle');
     const customResource = new LambdalessCustomResource(this, 'Resource', {
@@ -65,53 +60,20 @@ export class LambdalessWaitCondition extends Construct {
    * the key/value pairs encoded in `attrData` (the JSON document assembled by
    * `CfnWaitCondition` from each `SignalResource` call).
    *
-   * Internally, this parses `attrData` through an auxiliary
-   * `LambdalessCustomResource` so that the returned token is a simple
-   * `Fn::GetAtt`. This avoids CloudFormation template escaping pitfalls that
-   * occur when the raw `Fn::Split`/`Fn::Select` chain is embedded in contexts
-   * whose content ends up being `JSON.stringify`'d by CDK (for example,
-   * `eks.Cluster#addManifest`).
+   * Internally, `attrData` is parsed through a shared Lambdaless helper so
+   * that the returned token is a simple `Fn::GetAtt`. This avoids
+   * CloudFormation template escaping pitfalls that occur when the raw JSON
+   * string is embedded in contexts whose content ends up being
+   * `JSON.stringify`'d by CDK (for example, `eks.Cluster#addManifest`).
    *
-   * The auxiliary resource is created lazily on the first call, so consumers
+   * The helper resource is created lazily on the first call, so consumers
    * that do not call `getAttString` pay no extra cost.
    */
   getAttString(uniqueId: string): string {
     this.uniqueIds.add(uniqueId);
-    return this.ensureParsedResource().getAttString(uniqueId);
-  }
-
-  private ensureParsedResource(): LambdalessCustomResource {
-    if (this.parsedResource) {
-      return this.parsedResource;
-    }
-    const flow = new CustomResourceFlow(this, 'ParseFlow', {
-      onCreate: Pass.jsonata(this, 'ParseCreate', {
-        outputs: {
-          PhysicalResourceId: '{% $RequestId %}',
-          Data: '{% $parse($ResourceProperties.attrData) %}',
-        },
-      }),
-      onUpdate: Pass.jsonata(this, 'ParseUpdate', {
-        outputs: {
-          Data: '{% $parse($ResourceProperties.attrData) %}',
-        },
-      }),
-      onDelete: Pass.jsonata(this, 'ParseDelete', {
-        outputs: {
-          PhysicalResourceId: '{% $PhysicalResourceId %}',
-        },
-      }),
+    this.parsedAttrData ??= new LambdalessJsonParse(this, 'ParsedAttrData', {
+      value: this.attrData,
     });
-    const stateMachine = new StateMachine(this, 'ParseStateMachine', {
-      definitionBody: DefinitionBody.fromChainable(flow),
-    });
-    this.parsedResource = new LambdalessCustomResource(this, 'Parsed', {
-      stateMachine,
-      removalPolicy: this.removalPolicy,
-      properties: {
-        attrData: this.attrData,
-      },
-    });
-    return this.parsedResource;
+    return this.parsedAttrData.getAttString(uniqueId);
   }
 }

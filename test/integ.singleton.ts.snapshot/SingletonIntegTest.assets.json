@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "e8e06639336e61db3dd312b5a03548d4bc6f2ad7ddfd24335be2be67758e3ec8": {
+    "f1e75012ff1e8f81df4a8cdd8e4b93676dffa40b8d2bac098351f3d0b17d58cd": {
       "displayName": "SingletonIntegTest Template",
       "source": {
         "path": "SingletonIntegTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-71c2d307": {
+        "current_account-current_region-6cba06ed": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e8e06639336e61db3dd312b5a03548d4bc6f2ad7ddfd24335be2be67758e3ec8.json",
+          "objectKey": "f1e75012ff1e8f81df4a8cdd8e4b93676dffa40b8d2bac098351f3d0b17d58cd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
