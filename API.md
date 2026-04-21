@@ -466,7 +466,7 @@ new LambdalessWaitCondition(scope: Construct, id: string, props: LambdalessWaitC
 | --- | --- |
 | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.toString">toString</a></code> | Returns a string representation of this construct. |
 | <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.with">with</a></code> | Applies one or more mixins to this construct. |
-| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getAttString">getAttString</a></code> | *No description.* |
+| <code><a href="#aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getAttString">getAttString</a></code> | Returns the value of an attribute signaled to the wait condition through the key/value pairs encoded in `attrData` (the JSON document assembled by `CfnWaitCondition` from each `SignalResource` call). |
 
 ---
 
@@ -504,6 +504,18 @@ The mixins to apply.
 ```typescript
 public getAttString(uniqueId: string): string
 ```
+
+Returns the value of an attribute signaled to the wait condition through the key/value pairs encoded in `attrData` (the JSON document assembled by `CfnWaitCondition` from each `SignalResource` call).
+
+Internally, this parses `attrData` through an auxiliary
+`LambdalessCustomResource` so that the returned token is a simple
+`Fn::GetAtt`. This avoids CloudFormation template escaping pitfalls that
+occur when the raw `Fn::Split`/`Fn::Select` chain is embedded in contexts
+whose content ends up being `JSON.stringify`'d by CDK (for example,
+`eks.Cluster#addManifest`).
+
+The auxiliary resource is created lazily on the first call, so consumers
+that do not call `getAttString` pay no extra cost.
 
 ###### `uniqueId`<sup>Required</sup> <a name="uniqueId" id="aws-cdk-lambdaless-custom-resource.LambdalessWaitCondition.getAttString.parameter.uniqueId"></a>
 
