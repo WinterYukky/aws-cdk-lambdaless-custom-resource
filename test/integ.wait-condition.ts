@@ -14,7 +14,10 @@ const flow = new CustomResourceFlow(stack, 'Flow', {
   onCreate: Pass.jsonata(stack, 'CreateWithData', {
     outputs: {
       PhysicalResourceId: '{% $RequestId %}',
-      Data: { s3Prefix: 's3://my-bucket/path/to/artifact' },
+      Data: {
+        message: 'Hello, World!',
+        endpoint: 'https://api.example.com',
+      },
     },
   }),
   onDelete: Pass.jsonata(stack, 'DeleteNoOp', {
@@ -32,8 +35,15 @@ const waitCondition = new LambdalessWaitCondition(stack, 'WaitCondition', {
   resourceType: 'Custom::WaitConditionTest',
 });
 
-new cdk.CfnOutput(stack, 'S3Prefix', {
-  value: waitCondition.getAttString('s3Prefix'),
+// Exercise a JSON.stringify'd context. The returned token must survive being
+// embedded inside a string literal that CDK re-serializes at synthesis time
+// (e.g. any construct that goes through `Stack.toJsonString`, or user code
+// that calls `JSON.stringify` on an object containing tokens).
+new cdk.CfnOutput(stack, 'StringifiedPayload', {
+  value: JSON.stringify({
+    message: waitCondition.getAttString('message'),
+    endpoint: waitCondition.getAttString('endpoint'),
+  }),
 });
 
 const integ = new IntegTest(app, 'WaitConditionTest', {
@@ -47,7 +57,14 @@ const describe = integ.assertions.awsApiCall(
     StackName: stack.stackName,
   },
 );
+// The integ-tests SDK handler auto-parses JSON strings in the response
+// (`deepParseJson`). We assert on the parsed fields, which also proves that
+// the stringified payload round-trips through CloudFormation as valid JSON.
 describe.assertAtPath(
-  'Stacks.0.Outputs.0.OutputValue',
-  ExpectedResult.stringLikeRegexp('s3://my-bucket/path/to/artifact'),
+  'Stacks.0.Outputs.0.OutputValue.message',
+  ExpectedResult.stringLikeRegexp('Hello, World!'),
+);
+describe.assertAtPath(
+  'Stacks.0.Outputs.0.OutputValue.endpoint',
+  ExpectedResult.stringLikeRegexp('https://api.example.com'),
 );

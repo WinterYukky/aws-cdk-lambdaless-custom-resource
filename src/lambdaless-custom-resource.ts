@@ -36,6 +36,28 @@ const DENY_CONDITION: Record<string, iam.Condition> = {
 };
 
 /**
+ * Reserved `ResourceProperties.__lambdalessMode` values recognized by the
+ * shared Lambdaless orchestrator. Each mode routes to a distinct branch in
+ * the orchestrator state machine. New Lambdaless helpers can introduce new
+ * modes by adding a case here and a matching branch in the orchestrator.
+ */
+const LAMBDALESS_MODE = {
+  /**
+   * Default mode. Invokes the user-provided state machine and relays the
+   * result back to CloudFormation (and optionally signals a WaitCondition).
+   */
+  CUSTOM_RESOURCE: 'custom-resource',
+  /**
+   * Parses `ResourceProperties.__lambdalessJsonParseValue` as a JSON string
+   * at deployment time and returns the parsed object as `Data` so its
+   * top-level entries can be read through `Fn::GetAtt`.
+   */
+  JSON_PARSE: 'json-parse',
+} as const;
+
+const DEFAULT_MODE = LAMBDALESS_MODE.CUSTOM_RESOURCE;
+
+/**
  * CallAwsService that supports adding IAM conditions to auto-generated policies.
  */
 interface ConditionalCallAwsServiceProps extends CallAwsServiceProps {
@@ -150,7 +172,7 @@ class LambdalessProvider extends Construct {
     });
     const init = Pass.jsonata(this, 'Initialize', {
       assign: {
-        ExecutionArn: `{% $replace($states.input.ResourceProperties.stateMachineArn, 'stateMachine', 'execution') & ':' & $states.input.RequestId %}`,
+        ExecutionArn: `{% $exists($states.input.ResourceProperties.stateMachineArn) ? $replace($states.input.ResourceProperties.stateMachineArn, 'stateMachine', 'execution') & ':' & $states.input.RequestId : null %}`,
         RequestType: `{% $states.input.RequestType %}`,
         ResponseURL: `{% $states.input.ResponseURL %}`,
         StackId: `{% $states.input.StackId %}`,
@@ -161,6 +183,7 @@ class LambdalessProvider extends Construct {
         ResourceProperties: `{% $states.input.ResourceProperties %}`,
         OldResourceProperties: `{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}`,
         WaitConditionCallbackURL: `{% $exists($states.input.ResourceProperties.waitConditionCallbackURL) ? $states.input.ResourceProperties.waitConditionCallbackURL : null %}`,
+        Mode: `{% $exists($states.input.ResourceProperties.__lambdalessMode) ? $states.input.ResourceProperties.__lambdalessMode : '${DEFAULT_MODE}' %}`,
       },
     });
     const stillRunning = Wait.jsonata(this, 'Still Running', {
@@ -285,32 +308,61 @@ class LambdalessProvider extends Construct {
       .otherwise(cfnResponse);
 
     stillRunning.next(describeExecution);
-    const isFinished = Choice.jsonata(this, 'Is finished?')
-      .when(
-        Condition.jsonata("{% $states.input.Status = 'RUNNING' %}"),
-        stillRunning,
-      )
-      .when(
-        Condition.jsonata("{% $states.input.Status = 'SUCCEEDED' %}"),
-        hasWaitCondition,
-        {
-          outputs: '{% $parse($states.input.Output) %}',
-        },
-      )
-      .otherwise(
-        Pass.jsonata(this, 'Given workflow was failed', {
-          outputs: {
-            Status: 'FAILED',
-            Reason: "{% $states.input.Error & ': ' & $states.input.Cause %}",
+    describeExecution.next(
+      Choice.jsonata(this, 'Is finished?')
+        .when(
+          Condition.jsonata("{% $states.input.Status = 'RUNNING' %}"),
+          stillRunning,
+        )
+        .when(
+          Condition.jsonata("{% $states.input.Status = 'SUCCEEDED' %}"),
+          hasWaitCondition,
+          {
+            outputs: '{% $parse($states.input.Output) %}',
           },
-        }).next(cfnResponse),
-      );
+        )
+        .otherwise(
+          Pass.jsonata(this, 'Given workflow was failed', {
+            outputs: {
+              Status: 'FAILED',
+              Reason: "{% $states.input.Error & ': ' & $states.input.Cause %}",
+            },
+          }).next(cfnResponse),
+        ),
+    );
+
+    // Mode dispatcher. Each Lambdaless helper sets `ResourceProperties.__lambdalessMode`
+    // to opt into a specialized branch of this shared orchestrator. The
+    // default mode (`custom-resource`) invokes the user-provided state
+    // machine; other modes are fully self-contained and do not start any
+    // sub-execution.
+    const jsonParseBranch = Pass.jsonata(this, 'Parse JSON', {
+      outputs: {
+        PhysicalResourceId: '{% $RequestId %}',
+        Data: '{% $parse($ResourceProperties.__lambdalessJsonParseValue) %}',
+      },
+    }).next(cfnResponse);
+    const unknownModeBranch = Pass.jsonata(this, 'Unknown Mode', {
+      outputs: {
+        Status: 'FAILED',
+        Reason: "{% 'Unknown __lambdalessMode: ' & $Mode %}",
+      },
+    }).next(cfnResponse);
+    const routeByMode = Choice.jsonata(this, 'Dispatch Mode')
+      .when(
+        Condition.jsonata(`{% $Mode = '${LAMBDALESS_MODE.CUSTOM_RESOURCE}' %}`),
+        describeExecution,
+      )
+      .when(
+        Condition.jsonata(`{% $Mode = '${LAMBDALESS_MODE.JSON_PARSE}' %}`),
+        jsonParseBranch,
+      )
+      .otherwise(unknownModeBranch);
+
     return new StateMachine(this, 'StateMachine', {
       stateMachineType: StateMachineType.EXPRESS,
       queryLanguage: QueryLanguage.JSONATA,
-      definitionBody: DefinitionBody.fromChainable(
-        init.next(describeExecution).next(isFinished),
-      ),
+      definitionBody: DefinitionBody.fromChainable(init.next(routeByMode)),
     });
   }
 }
@@ -438,6 +490,92 @@ export class LambdalessCustomResource extends Construct {
    *
    * @param attributeName the name of the attribute
    * @returns a token for `Fn::GetAtt` encoded as a string.
+   */
+  getAttString(attributeName: string): string {
+    return this.resource.getAttString(attributeName);
+  }
+}
+
+/**
+ * Properties for `LambdalessJsonParse`.
+ */
+export interface LambdalessJsonParseProps {
+  /**
+   * The JSON-formatted string to deserialize at deployment time. Can contain
+   * CloudFormation tokens, including `Fn::GetAtt` on other resources.
+   */
+  readonly value: string;
+  /**
+   * CloudFormation custom resource type name.
+   *
+   * @default - AWS::CloudFormation::CustomResource
+   */
+  readonly resourceType?: string;
+  /**
+   * The policy to apply when this resource is removed from the application.
+   *
+   * @default cdk.RemovalPolicy.Destroy
+   */
+  readonly removalPolicy?: cdk.RemovalPolicy;
+}
+
+/**
+ * Parses a JSON-formatted string at CloudFormation deployment time and exposes
+ * its top-level entries as simple `Fn::GetAtt` tokens.
+ *
+ * This is a Lambdaless counterpart to `aws-cdk-lib.CfnJson`. Unlike `CfnJson`,
+ * it is backed by the shared Step Functions orchestrator used by
+ * `LambdalessCustomResource`, so no Lambda runtime is ever provisioned.
+ *
+ * The primary use case is to flatten a JSON *string* token (for example, the
+ * `Data` attribute of an `AWS::CloudFormation::WaitCondition`, or any opaque
+ * string attribute returned by another custom resource) into individual
+ * `Fn::GetAtt` references. The resulting tokens contain no quote characters
+ * and therefore survive being embedded in contexts that CDK re-serializes
+ * with `JSON.stringify`.
+ *
+ * @example
+ * declare const waitCondition: cdk.CfnWaitCondition;
+ * const parsed = new LambdalessJsonParse(this, 'Parsed', {
+ *   value: waitCondition.attrData.toString(),
+ * });
+ * new cdk.CfnOutput(this, 'Message', {
+ *   value: parsed.getAttString('message'),
+ * });
+ */
+export class LambdalessJsonParse extends Construct {
+  private readonly resource: cdk.CustomResource;
+  constructor(scope: Construct, id: string, props: LambdalessJsonParseProps) {
+    super(scope, id);
+
+    const stack = cdk.Stack.of(this);
+    const framework =
+      (stack.node.tryFindChild('LambdalessProvider') as LambdalessProvider) ??
+      new LambdalessProvider(stack, 'LambdalessProvider', {});
+    this.resource = new cdk.CustomResource(this, 'Resource', {
+      serviceToken: framework.serviceToken,
+      resourceType: props.resourceType,
+      removalPolicy: props.removalPolicy,
+      properties: {
+        __lambdalessMode: LAMBDALESS_MODE.JSON_PARSE,
+        __lambdalessJsonParseValue: props.value,
+      },
+    });
+  }
+  /**
+   * Returns the value of a top-level entry of the parsed JSON object as a
+   * generic `Fn::GetAtt` reference.
+   *
+   * @param attributeName the name of the top-level key in the parsed JSON.
+   */
+  getAtt(attributeName: string): cdk.Reference {
+    return this.resource.getAtt(attributeName);
+  }
+  /**
+   * Returns the value of a top-level entry of the parsed JSON object as a
+   * string-encoded `Fn::GetAtt` token.
+   *
+   * @param attributeName the name of the top-level key in the parsed JSON.
    */
   getAttString(attributeName: string): string {
     return this.resource.getAttString(attributeName);

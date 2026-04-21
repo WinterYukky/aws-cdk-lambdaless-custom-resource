@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "1d19b59fbfdc9adc76b463acbfeae12b131e3e9a819c9c73851144b114f80a84": {
+    "26d6ce3918f07b9f8bd560899aa6df0e7273015f83bba57f3d7939aa5839699f": {
       "displayName": "AutoDeleteObjectsIntegTest Template",
       "source": {
         "path": "AutoDeleteObjectsIntegTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-88874edb": {
+        "current_account-current_region-34cb56e7": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1d19b59fbfdc9adc76b463acbfeae12b131e3e9a819c9c73851144b114f80a84.json",
+          "objectKey": "26d6ce3918f07b9f8bd560899aa6df0e7273015f83bba57f3d7939aa5839699f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

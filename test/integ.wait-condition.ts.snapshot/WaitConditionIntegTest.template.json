@@ -20,7 +20,7 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "DefinitionString": "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"CreateWithData\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"Update\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"DeleteNoOp\"}]},\"CreateWithData\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $RequestId %}\",\"Data\":{\"s3Prefix\":\"s3://my-bucket/path/to/artifact\"}},\"End\":true},\"Update\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"DeleteNoOp\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $PhysicalResourceId %}\"},\"End\":true}}}",
+    "DefinitionString": "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"CreateWithData\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"Update\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"DeleteNoOp\"}]},\"CreateWithData\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $RequestId %}\",\"Data\":{\"message\":\"Hello, World!\",\"endpoint\":\"https://api.example.com\"}},\"End\":true},\"Update\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"DeleteNoOp\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $PhysicalResourceId %}\"},\"End\":true}}}",
     "RoleArn": {
      "Fn::GetAtt": [
       "StateMachineRoleB840431D",
@@ -226,7 +226,7 @@
   "WaitConditionE05DAE56": {
    "Type": "AWS::CloudFormation::WaitCondition",
    "Properties": {
-    "Count": 1,
+    "Count": 2,
     "Handle": {
      "Ref": "WaitConditionHandle1CC3DD84"
     },
@@ -236,6 +236,112 @@
     "WaitConditionPolicyD4185F63",
     "WaitCondition1046E89E"
    ]
+  },
+  "WaitConditionParsedAttrData194D05DC": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Fn::Select": [
+         1,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueWaitConditionIntegTestLambdalessProviderTopic4BC6CBD6C675897E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueWaitConditionIntegTestLambdalessProviderTopic4BC6CBD6C675897E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         3,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueWaitConditionIntegTestLambdalessProviderTopic4BC6CBD6C675897E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         4,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueWaitConditionIntegTestLambdalessProviderTopic4BC6CBD6C675897E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         5,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueWaitConditionIntegTestLambdalessProviderTopic4BC6CBD6C675897E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    },
+    "__lambdalessMode": "json-parse",
+    "__lambdalessJsonParseValue": {
+     "Fn::GetAtt": [
+      "WaitConditionE05DAE56",
+      "Data"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "LambdalessProviderTopic58DC2415": {
    "Type": "AWS::SNS::Topic",
@@ -358,19 +464,6 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "states:describeExecution",
-        "states:startExecution"
-       ],
-       "Condition": {
-        "StringEquals": {
-         "aws:RequestedRegion": "DISABLED"
-        }
-       },
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
        "Action": "events:RetrieveConnectionCredentials",
        "Effect": "Allow",
        "Resource": {
@@ -402,6 +495,19 @@
        },
        "Effect": "Allow",
        "Resource": "*"
+      },
+      {
+       "Action": [
+        "states:describeExecution",
+        "states:startExecution"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestedRegion": "DISABLED"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -421,15 +527,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"Next\":\"Describe Execution\",\"Assign\":{\"ExecutionArn\":\"{% $replace($states.input.ResourceProperties.stateMachineArn, 'stateMachine', 'execution') & ':' & $states.input.RequestId %}\",\"RequestType\":\"{% $states.input.RequestType %}\",\"ResponseURL\":\"{% $states.input.ResponseURL %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\",\"WaitConditionCallbackURL\":\"{% $exists($states.input.ResourceProperties.waitConditionCallbackURL) ? $states.input.ResourceProperties.waitConditionCallbackURL : null %}\"}},\"Describe Execution\":{\"Next\":\"Is finished?\",\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"Start Execution\"}],\"Type\":\"Task\",\"Arguments\":{\"ExecutionArn\":\"{% $ExecutionArn %}\",\"IncludedData\":\"ALL_DATA\"},\"Resource\":\"arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":states:::aws-sdk:sfn:describeExecution\"},\"Still Running\":{\"Type\":\"Wait\",\"Seconds\":1,\"Next\":\"Describe Execution\"},\"Start Execution\":{\"Next\":\"Still Running\",\"Type\":\"Task\",\"Arguments\":{\"Name\":\"{% $RequestId %}\",\"Input\":{\"RequestType\":\"{% $RequestType %}\",\"StackId\":\"{% $StackId %}\",\"RequestId\":\"{% $RequestId %}\",\"ResourceType\":\"{% $ResourceType %}\",\"LogicalResourceId\":\"{% $LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $PhysicalResourceId %}\",\"ResourceProperties\":\"{% $ResourceProperties %}\",\"OldResourceProperties\":\"{% $OldResourceProperties %}\"},\"StateMachineArn\":\"{% $ResourceProperties.stateMachineArn %}\"},\"Resource\":\"arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":states:::aws-sdk:sfn:startExecution\"},\"Is finished?\":{\"Type\":\"Choice\",\"Choices\":[{\"Condition\":\"{% $states.input.Status = 'RUNNING' %}\",\"Next\":\"Still Running\"},{\"Condition\":\"{% $states.input.Status = 'SUCCEEDED' %}\",\"Output\":\"{% $parse($states.input.Output) %}\",\"Next\":\"Has WaitCondition?\"}],\"Default\":\"Given workflow was failed\"},\"Given workflow was failed\":{\"Type\":\"Pass\",\"Output\":{\"Status\":\"FAILED\",\"Reason\":\"{% $states.input.Error & ': ' & $states.input.Cause %}\"},\"Next\":\"Response to CloudFormation\"},\"Response to CloudFormation\":{\"End\":true,\"Type\":\"Task\",\"Arguments\":{\"ApiEndpoint\":\"{% $match($ResponseURL, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[0] & '/' & $match($ResponseURL, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[1] ~> $decodeUrlComponent() %}\",\"Authentication\":{\"ConnectionArn\":\"",
+       "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"Next\":\"Dispatch Mode\",\"Assign\":{\"ExecutionArn\":\"{% $exists($states.input.ResourceProperties.stateMachineArn) ? $replace($states.input.ResourceProperties.stateMachineArn, 'stateMachine', 'execution') & ':' & $states.input.RequestId : null %}\",\"RequestType\":\"{% $states.input.RequestType %}\",\"ResponseURL\":\"{% $states.input.ResponseURL %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\",\"WaitConditionCallbackURL\":\"{% $exists($states.input.ResourceProperties.waitConditionCallbackURL) ? $states.input.ResourceProperties.waitConditionCallbackURL : null %}\",\"Mode\":\"{% $exists($states.input.ResourceProperties.__lambdalessMode) ? $states.input.ResourceProperties.__lambdalessMode : 'custom-resource' %}\"}},\"Dispatch Mode\":{\"Type\":\"Choice\",\"Choices\":[{\"Condition\":\"{% $Mode = 'custom-resource' %}\",\"Next\":\"Describe Execution\"},{\"Condition\":\"{% $Mode = 'json-parse' %}\",\"Next\":\"Parse JSON\"}],\"Default\":\"Unknown Mode\"},\"Unknown Mode\":{\"Type\":\"Pass\",\"Output\":{\"Status\":\"FAILED\",\"Reason\":\"{% 'Unknown __lambdalessMode: ' & $Mode %}\"},\"Next\":\"Response to CloudFormation\"},\"Response to CloudFormation\":{\"End\":true,\"Type\":\"Task\",\"Arguments\":{\"ApiEndpoint\":\"{% $match($ResponseURL, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[0] & '/' & $match($ResponseURL, /(https://[^/]+)\\\\/(.*)\\\\?/).groups[1] ~> $decodeUrlComponent() %}\",\"Authentication\":{\"ConnectionArn\":\"",
        {
         "Fn::GetAtt": [
          "LambdalessProviderConnection803AC994",
@@ -451,7 +549,15 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::http:invoke\"}}}},\"Has WaitCondition?\":{\"Type\":\"Choice\",\"Choices\":[{\"Condition\":\"{% $WaitConditionCallbackURL != null %}\",\"Next\":\"Signal WaitCondition\"}],\"Default\":\"Response to CloudFormation\"}},\"QueryLanguage\":\"JSONata\"}"
+       ":states:::http:invoke\"}}}},\"Has WaitCondition?\":{\"Type\":\"Choice\",\"Choices\":[{\"Condition\":\"{% $WaitConditionCallbackURL != null %}\",\"Next\":\"Signal WaitCondition\"}],\"Default\":\"Response to CloudFormation\"},\"Is finished?\":{\"Type\":\"Choice\",\"Choices\":[{\"Condition\":\"{% $states.input.Status = 'RUNNING' %}\",\"Next\":\"Still Running\"},{\"Condition\":\"{% $states.input.Status = 'SUCCEEDED' %}\",\"Output\":\"{% $parse($states.input.Output) %}\",\"Next\":\"Has WaitCondition?\"}],\"Default\":\"Given workflow was failed\"},\"Describe Execution\":{\"Next\":\"Is finished?\",\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"Start Execution\"}],\"Type\":\"Task\",\"Arguments\":{\"ExecutionArn\":\"{% $ExecutionArn %}\",\"IncludedData\":\"ALL_DATA\"},\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::aws-sdk:sfn:describeExecution\"},\"Still Running\":{\"Type\":\"Wait\",\"Seconds\":1,\"Next\":\"Describe Execution\"},\"Start Execution\":{\"Next\":\"Still Running\",\"Type\":\"Task\",\"Arguments\":{\"Name\":\"{% $RequestId %}\",\"Input\":{\"RequestType\":\"{% $RequestType %}\",\"StackId\":\"{% $StackId %}\",\"RequestId\":\"{% $RequestId %}\",\"ResourceType\":\"{% $ResourceType %}\",\"LogicalResourceId\":\"{% $LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $PhysicalResourceId %}\",\"ResourceProperties\":\"{% $ResourceProperties %}\",\"OldResourceProperties\":\"{% $OldResourceProperties %}\"},\"StateMachineArn\":\"{% $ResourceProperties.stateMachineArn %}\"},\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::aws-sdk:sfn:startExecution\"},\"Given workflow was failed\":{\"Type\":\"Pass\",\"Output\":{\"Status\":\"FAILED\",\"Reason\":\"{% $states.input.Error & ': ' & $states.input.Cause %}\"},\"Next\":\"Response to CloudFormation\"},\"Parse JSON\":{\"Type\":\"Pass\",\"Output\":{\"PhysicalResourceId\":\"{% $RequestId %}\",\"Data\":\"{% $parse($ResourceProperties.__lambdalessJsonParseValue) %}\"},\"Next\":\"Response to CloudFormation\"}},\"QueryLanguage\":\"JSONata\"}"
       ]
      ]
     },
@@ -564,41 +670,27 @@
   }
  },
  "Outputs": {
-  "S3Prefix": {
+  "StringifiedPayload": {
    "Value": {
     "Fn::Join": [
      "",
-     {
-      "Fn::Split": [
-       "\"}",
-       {
-        "Fn::Select": [
-         0,
-         {
-          "Fn::Split": [
-           "\",\"",
-           {
-            "Fn::Select": [
-             1,
-             {
-              "Fn::Split": [
-               "\"s3Prefix\":\"",
-               {
-                "Fn::GetAtt": [
-                 "WaitConditionE05DAE56",
-                 "Data"
-                ]
-               }
-              ]
-             }
-            ]
-           }
-          ]
-         }
-        ]
-       }
-      ]
-     }
+     [
+      "{\"message\":\"",
+      {
+       "Fn::GetAtt": [
+        "WaitConditionParsedAttrData194D05DC",
+        "message"
+       ]
+      },
+      "\",\"endpoint\":\"",
+      {
+       "Fn::GetAtt": [
+        "WaitConditionParsedAttrData194D05DC",
+        "endpoint"
+       ]
+      },
+      "\"}"
+     ]
     ]
    }
   }

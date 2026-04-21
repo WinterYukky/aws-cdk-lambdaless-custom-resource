@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "51363c86f755dcc0d267c00dd296e9dda0d2a9b2d76a5f155c1b24d644fceb3a": {
+    "8c2a994c7614f5ae5350ad9503c417d5723868c73072727f28c2aeb75f8eca7f": {
       "displayName": "WaitConditionIntegTest Template",
       "source": {
         "path": "WaitConditionIntegTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-5964bdb3": {
+        "current_account-current_region-7797f163": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "51363c86f755dcc0d267c00dd296e9dda0d2a9b2d76a5f155c1b24d644fceb3a.json",
+          "objectKey": "8c2a994c7614f5ae5350ad9503c417d5723868c73072727f28c2aeb75f8eca7f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,7 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import { IStateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 import { Construct } from 'constructs';
-import { LambdalessCustomResource } from './lambdaless-custom-resource';
+import {
+  LambdalessCustomResource,
+  LambdalessJsonParse,
+} from './lambdaless-custom-resource';
 
 export interface LambdalessWaitConditionProps {
   readonly stateMachine: IStateMachine;
@@ -22,6 +25,7 @@ export class LambdalessWaitCondition extends Construct {
   readonly attrData: string;
   private readonly uniqueIds = new Set<string>();
   private readonly explicitCount?: number;
+  private parsedAttrData?: LambdalessJsonParse;
 
   constructor(
     scope: Construct,
@@ -51,11 +55,25 @@ export class LambdalessWaitCondition extends Construct {
     this.attrData = waitCondition.attrData.toString();
   }
 
+  /**
+   * Returns the value of an attribute signaled to the wait condition through
+   * the key/value pairs encoded in `attrData` (the JSON document assembled by
+   * `CfnWaitCondition` from each `SignalResource` call).
+   *
+   * Internally, `attrData` is parsed through a shared Lambdaless helper so
+   * that the returned token is a simple `Fn::GetAtt`. This avoids
+   * CloudFormation template escaping pitfalls that occur when the raw JSON
+   * string is embedded in contexts whose content ends up being
+   * `JSON.stringify`'d by CDK.
+   *
+   * The helper resource is created lazily on the first call, so consumers
+   * that do not call `getAttString` pay no extra cost.
+   */
   getAttString(uniqueId: string): string {
     this.uniqueIds.add(uniqueId);
-    const prefix = `"${uniqueId}":"`;
-    const afterPrefix = cdk.Fn.select(1, cdk.Fn.split(prefix, this.attrData));
-    const beforeNextEntry = cdk.Fn.select(0, cdk.Fn.split('","', afterPrefix));
-    return cdk.Fn.join('', cdk.Fn.split('"}', beforeNextEntry));
+    this.parsedAttrData ??= new LambdalessJsonParse(this, 'ParsedAttrData', {
+      value: this.attrData,
+    });
+    return this.parsedAttrData.getAttString(uniqueId);
   }
 }

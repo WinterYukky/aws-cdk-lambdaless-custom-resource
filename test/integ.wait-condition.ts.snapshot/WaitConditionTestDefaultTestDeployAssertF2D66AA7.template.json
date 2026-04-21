@@ -11,16 +11,17 @@
     },
     "service": "CloudFormation",
     "api": "describeStacks",
-    "expected": "{\"$StringLike\":\"s3://my-bucket/path/to/artifact\"}",
-    "actualPath": "Stacks.0.Outputs.0.OutputValue",
+    "expected": "{\"$StringLike\":\"https://api.example.com\"}",
+    "actualPath": "Stacks.0.Outputs.0.OutputValue.endpoint",
     "parameters": {
      "StackName": "\"WaitConditionIntegTest\""
     },
     "flattenResponse": "true",
     "outputPaths": [
-     "Stacks.0.Outputs.0.OutputValue"
+     "Stacks.0.Outputs.0.OutputValue.message",
+     "Stacks.0.Outputs.0.OutputValue.endpoint"
     ],
-    "salt": "1773370574082"
+    "salt": "1776761442679"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
