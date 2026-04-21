@@ -20,7 +20,7 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "DefinitionString": "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"CreateWithData\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"Update\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"DeleteNoOp\"}]},\"CreateWithData\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $RequestId %}\",\"Data\":{\"s3Prefix\":\"s3://my-bucket/path/to/artifact\"}},\"End\":true},\"Update\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"DeleteNoOp\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $PhysicalResourceId %}\"},\"End\":true}}}",
+    "DefinitionString": "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"CreateWithData\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"Update\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"DeleteNoOp\"}]},\"CreateWithData\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $RequestId %}\",\"Data\":{\"s3Prefix\":\"s3://my-bucket/path/to/artifact\",\"region\":\"ap-northeast-1\"}},\"End\":true},\"Update\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true},\"DeleteNoOp\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $PhysicalResourceId %}\"},\"End\":true}}}",
     "RoleArn": {
      "Fn::GetAtt": [
       "StateMachineRoleB840431D",
@@ -226,7 +226,7 @@
   "WaitConditionE05DAE56": {
    "Type": "AWS::CloudFormation::WaitCondition",
    "Properties": {
-    "Count": 1,
+    "Count": 2,
     "Handle": {
      "Ref": "WaitConditionHandle1CC3DD84"
     },
@@ -236,6 +236,229 @@
     "WaitConditionPolicyD4185F63",
     "WaitCondition1046E89E"
    ]
+  },
+  "WaitConditionParseStateMachineRoleD7B9261B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "WaitConditionParseStateMachineE07FB5CB": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": "{\"StartAt\":\"Initialize\",\"States\":{\"Initialize\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Next\":\"Which Request Type?\",\"Assign\":{\"RequestType\":\"{% $states.input.RequestType %}\",\"StackId\":\"{% $states.input.StackId %}\",\"RequestId\":\"{% $states.input.RequestId %}\",\"ResourceType\":\"{% $states.input.ResourceType %}\",\"LogicalResourceId\":\"{% $states.input.LogicalResourceId %}\",\"PhysicalResourceId\":\"{% $exists($states.input.PhysicalResourceId) ? $states.input.PhysicalResourceId : null %}\",\"ResourceProperties\":\"{% $states.input.ResourceProperties %}\",\"OldResourceProperties\":\"{% $exists($states.input.OldResourceProperties) ? $states.input.OldResourceProperties : null %}\"}},\"Which Request Type?\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Choices\":[{\"Condition\":\"{% $RequestType = \\\"Create\\\" %}\",\"Next\":\"ParseCreate\"},{\"Condition\":\"{% $RequestType = \\\"Update\\\" %}\",\"Next\":\"ParseUpdate\"},{\"Condition\":\"{% $RequestType = \\\"Delete\\\" %}\",\"Next\":\"ParseDelete\"}]},\"ParseCreate\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $RequestId %}\",\"Data\":\"{% $parse($ResourceProperties.attrData) %}\"},\"End\":true},\"ParseUpdate\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"Data\":\"{% $parse($ResourceProperties.attrData) %}\"},\"End\":true},\"ParseDelete\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"PhysicalResourceId\":\"{% $PhysicalResourceId %}\"},\"End\":true}}}",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "WaitConditionParseStateMachineRoleD7B9261B",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "WaitConditionParseStateMachineRoleD7B9261B"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "WaitConditionParsedD684EA83": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Fn::Select": [
+         1,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueWaitConditionIntegTestLambdalessProviderTopic4BC6CBD6C675897E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueWaitConditionIntegTestLambdalessProviderTopic4BC6CBD6C675897E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         3,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueWaitConditionIntegTestLambdalessProviderTopic4BC6CBD6C675897E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         4,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueWaitConditionIntegTestLambdalessProviderTopic4BC6CBD6C675897E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":",
+       {
+        "Fn::Select": [
+         5,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "LambdalessProviderQueueWaitConditionIntegTestLambdalessProviderTopic4BC6CBD6C675897E",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    },
+    "attrData": {
+     "Fn::GetAtt": [
+      "WaitConditionE05DAE56",
+      "Data"
+     ]
+    },
+    "stateMachineArn": {
+     "Ref": "WaitConditionParseStateMachineE07FB5CB"
+    }
+   },
+   "DependsOn": [
+    "WaitConditionParsedPolicyAF050360"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "WaitConditionParsedPolicyAF050360": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "states:ListExecutions",
+        "states:ListStateMachines",
+        "states:StartExecution"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "WaitConditionParseStateMachineE07FB5CB"
+       }
+      },
+      {
+       "Action": [
+        "states:DescribeExecution",
+        "states:DescribeStateMachineForExecution",
+        "states:GetExecutionHistory"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::Select": [
+            6,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Ref": "WaitConditionParseStateMachineE07FB5CB"
+              }
+             ]
+            }
+           ]
+          },
+          ":*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "states:DescribeActivity",
+        "states:DescribeStateMachine",
+        "states:ListActivities"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "WaitConditionParsedPolicyAF050360",
+    "Roles": [
+     {
+      "Ref": "LambdalessProviderStateMachineRole4BDCD64E"
+     }
+    ]
+   }
   },
   "LambdalessProviderTopic58DC2415": {
    "Type": "AWS::SNS::Topic",
@@ -564,41 +787,27 @@
   }
  },
  "Outputs": {
-  "S3Prefix": {
+  "StringifiedPayload": {
    "Value": {
     "Fn::Join": [
      "",
-     {
-      "Fn::Split": [
-       "\"}",
-       {
-        "Fn::Select": [
-         0,
-         {
-          "Fn::Split": [
-           "\",\"",
-           {
-            "Fn::Select": [
-             1,
-             {
-              "Fn::Split": [
-               "\"s3Prefix\":\"",
-               {
-                "Fn::GetAtt": [
-                 "WaitConditionE05DAE56",
-                 "Data"
-                ]
-               }
-              ]
-             }
-            ]
-           }
-          ]
-         }
-        ]
-       }
-      ]
-     }
+     [
+      "{\"s3Prefix\":\"",
+      {
+       "Fn::GetAtt": [
+        "WaitConditionParsedD684EA83",
+        "s3Prefix"
+       ]
+      },
+      "\",\"region\":\"",
+      {
+       "Fn::GetAtt": [
+        "WaitConditionParsedD684EA83",
+        "region"
+       ]
+      },
+      "\"}"
+     ]
     ]
    }
   }
