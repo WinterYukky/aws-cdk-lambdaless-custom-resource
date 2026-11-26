@@ -16,6 +16,10 @@ const project = new awscdk.AwsCdkConstructLibrary({
     'step-functions',
     'lambdaless',
   ],
+  publishToNuget: {
+    dotNetNamespace: 'WinterYukky.AwsCdk.LambdalessCustomResource',
+    packageId: 'WinterYukky.AwsCdk.LambdalessCustomResource',
+  },
   eslintOptions: {
     dirs: ['src'],
     ignorePatterns: ['test/**/*.snapshot/**'],
